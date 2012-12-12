@@ -6,7 +6,7 @@ import subprocess
 
 
 # Regular expression for matching JavaScript source filenames
-rx_source = re.compile(r'[-a-z0-9.]+(?<!min)\.js$')
+rx_source = re.compile(r'[-a-z0-9.]+(?<!min)\.js')
 
 # Find dependencies for a given file.
 def find_dependencies(filename, visited=None):    
