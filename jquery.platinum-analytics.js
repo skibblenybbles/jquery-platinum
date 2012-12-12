@@ -1,10 +1,11 @@
-// requires: jquery.platinum-scripts.js, jquery.platinum-arguments.js
+// requires: jquery.platinum-scripts.js, jquery.platinum-lang.js, jquery.platinum-arguments.js
 
 (function($) {
     
     var 
         // the required plugins
         jScripts = $.platinum.scripts,
+        jLang = $.platinum.lang,
         jArguments = $.platinum.arguments,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
@@ -73,7 +74,7 @@
                 
                 // create a function that calls the given callback with
                 // the value returned by the async GA _get* method
-                return (function(method) {
+                return lang.partial(function(method) {
                     
                     return function() {
                         
@@ -84,33 +85,31 @@
                         }
                         
                         // create the callback that will run the given callback
-                        window._gaq.push((function(method, callback, args) {
-                            
+                        window._gaq.push(lang.partial(function(method, callback, args) {
+                                
                             return function() {
                                 // get the default tracker
                                 var tracker = window._gat._getTrackerByName();
-                                
+
                                 // run the callback with the tracker method's result
                                 callback(tracker[method].apply(tracker, args));
                             };
-                            
-                        })(method, callback, jArguments(arguments, 1)));
                         
+                        }, method, callback, jArguments(arguments, 1)));
                     };
-                    
-                })(methods[name]);
+                }, methods[name]);
                 
             } else {
                 
                 // create a function that pushes the command into the global queue
-                return (function(method) {
+                return lang.partial(function(method) {
                     
                     return function() {
                         
-                        window._gaq.push([method].concat(jArguments(arguments)));
+                        window._gaq.push([method].concat(arguments));
                     };
                     
-                })(methods[name]);
+                }, methods[name]);
             }
         },
         
