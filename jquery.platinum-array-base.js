@@ -1,15 +1,17 @@
+/**
+ * @license jquery.platinum-array-base.js
+ *
+ * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
+ * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
+ */
+
+jQuery.platinum = jQuery.platinum || { };
+
 (function(jQuery) {
 
-// requires:
-
-(function($) {
-    
-    $.platinum = $.platinum || { };
-    
-})(jQuery);
-
-////////////////////
-// requires: base.js
+////////////////////////////////////////
+// source: jquery.platinum-array-base.js
+// requires: 
 
 (function($) {
     
@@ -37,5 +39,7 @@
     };
     
 })(jQuery);
-////////////////////
+
+////////////////////////////////////////
+
 })(jQuery);

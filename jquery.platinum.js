@@ -1,15 +1,17 @@
+/**
+ * @license jquery.platinum.js
+ *
+ * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
+ * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
+ */
+
+jQuery.platinum = jQuery.platinum || { };
+
 (function(jQuery) {
 
-// requires:
-
-(function($) {
-    
-    $.platinum = $.platinum || { };
-    
-})(jQuery);
-
-////////////////////
-// requires: base.js
+////////////////////////////////////////
+// source: jquery.platinum-arguments.js
+// requires: 
 
 (function($) {
     
@@ -33,7 +35,8 @@
     
 })(jQuery);
 
-////////////////////
+////////////////////////////////////////
+// source: jquery.platinum-lang.js
 // requires: arguments.js
 
 (function($) {
@@ -63,8 +66,9 @@
     
 })(jQuery);
 
-////////////////////
-// requires: base.js
+////////////////////////////////////////
+// source: jquery.platinum-array-base.js
+// requires: 
 
 (function($) {
     
@@ -92,7 +96,8 @@
     };
     
 })(jQuery);
-////////////////////
+////////////////////////////////////////
+// source: jquery.platinum-array.js
 // requires: array-base.js
 
 (function($) {
@@ -351,8 +356,9 @@
     });
     
 })(jQuery);
-////////////////////
-// requires: base.js
+////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: 
 
 (function($) {
     
@@ -378,7 +384,8 @@
     
 })(jQuery);
 
-////////////////////
+////////////////////////////////////////
+// source: jquery.platinum-analytics.js
 // requires: scripts.js, lang.js, arguments.js
 
 (function($) {
@@ -536,10 +543,13 @@
     
 })(jQuery);
 
-////////////////////
+////////////////////////////////////////
+// source: jquery.platinum-platinum.js
 // requires: lang.js, array.js, scripts.js, analytics.js
 
 // This file is used to generate the full minified output by the build script.
 
-////////////////////
+
+////////////////////////////////////////
+
 })(jQuery);

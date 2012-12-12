@@ -3,6 +3,7 @@
 import os
 import re
 import subprocess
+from datetime import date
 
 
 # Regular expression for matching JavaScript source filenames
@@ -31,6 +32,50 @@ def find_dependencies(filename, visited=None):
     required = required + [filename]
     return required
 
+def build_command(output_name, dependencies, output_dependencies):
+    cat = \
+"""
+echo '////////////////////////////////////////' ; 
+echo '// source: %s' ;
+cat %s ; 
+echo '' ; 
+"""
+    cat = cat.lstrip()
+    cat = "".join([cat % (
+        output_dependency,
+        dependency,
+    ) for dependency, output_dependency in zip(dependencies, output_dependencies)])
+    cat = cat.rstrip()
+    
+    command = \
+"""
+(echo '/**' ; 
+echo ' * @license %s' ; 
+echo ' *' ;
+echo ' * Copyright (C) %d Mike Kibbel, MetaMetrics, Inc.' ; 
+echo ' * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE' ; 
+echo ' */' ; 
+echo '' ; 
+echo 'jQuery.platinum = jQuery.platinum || { };' ;
+echo ''
+echo '(function(jQuery) {' ;
+echo '' ;
+%s 
+echo '' ;
+echo '////////////////////////////////////////' ; 
+echo '' ;
+echo '})(jQuery);' )
+"""
+    command = command.strip()
+    command = command % (
+        output_name, 
+        date.today().year,
+        cat,
+    )
+    
+    return command
+
+    
 
 if __name__ == "__main__":
     input_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -49,10 +94,14 @@ if __name__ == "__main__":
             # Find all dependencies.
             dependencies = find_dependencies(input_name)
             
-            # Build the output filenames
+            # Create the dependencies' output names.
+            output_dependencies = ["jquery.platinum-%s" % os.path.basename(dependency) for dependency in dependencies]
+            
+            # Get the output directory.
             output_dir, output_name = os.path.split(input_name)
             output_dir = os.path.join(output_dir, "..")
             
+            # Build the output filenames.
             output_name, ext = os.path.splitext(output_name)
             if output_name != "platinum":
                 output_min_name = "jquery.platinum-%s.min%s" % (output_name, ext)
@@ -61,19 +110,19 @@ if __name__ == "__main__":
                 output_min_name = "jquery.platinum.min.js"
                 output_name = "jquery.platinum.js"
             
-            output_min_name = os.path.join(output_dir, output_min_name)
-            output_name = os.path.join(output_dir, output_name)
+            # Build the full output paths.
+            output_min_path = os.path.join(output_dir, output_min_name)
+            output_path = os.path.join(output_dir, output_name)
             
+            # Build.
             print u"Building %s" % input_name
-            command = "(echo '(function(jQuery) {' ; echo '' ; %s echo '})(jQuery);')" % (
-                " ".join(["cat %s ; echo '' ; echo '////////////////////' ;" % dependency for dependency in dependencies])
-            )
+            command = build_command(output_name, dependencies, output_dependencies)
             
             # Create unminified files
             subprocess.call(
                 "%s > %s" % (
                     command,
-                    output_name,
+                    output_path,
                 ),
                 shell=True,
             )            
@@ -83,7 +132,7 @@ if __name__ == "__main__":
                 "%s | java -jar %s > %s" % (
                     command,
                     cc_name,
-                    output_min_name,
+                    output_min_path,
                 ),
                 shell=True,
             )
