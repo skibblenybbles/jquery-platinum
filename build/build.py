@@ -32,6 +32,7 @@ def find_dependencies(filename, visited=None):
     required = required + [filename]
     return required
 
+
 def build_command(output_name, dependencies, output_dependencies):
     cat = \
 """
@@ -75,7 +76,6 @@ echo '})(jQuery);' )
     
     return command
 
-    
 
 if __name__ == "__main__":
     input_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
