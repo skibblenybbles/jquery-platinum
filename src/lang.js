@@ -1,4 +1,4 @@
-// requires: jquery.platinum-arguments.js
+// requires: arguments.js
 
 (function($) {
     

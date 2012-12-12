@@ -1,4 +1,4 @@
-// requires: jquery.platinum-array-base.js
+// requires: array-base.js
 
 (function($) {
     

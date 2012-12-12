@@ -1,4 +1,4 @@
-// requires: jquery.platinum-base.js
+// requires: base.js
 
 (function($) {
     

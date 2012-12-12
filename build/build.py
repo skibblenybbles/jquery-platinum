@@ -6,7 +6,7 @@ import subprocess
 
 
 # Regular expression for matching JavaScript source filenames
-rx_source = re.compile(r'[-a-z0-9.]+(?<!min)\.js')
+rx_source = re.compile(r'[-a-z0-9.]+\.js')
 
 # Find dependencies for a given file.
 def find_dependencies(filename, visited=None):    
@@ -33,7 +33,7 @@ def find_dependencies(filename, visited=None):
 
 
 if __name__ == "__main__":
-    input_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    input_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
     cc_name = os.path.join(os.path.dirname(__file__), "google-cc/compiler.jar")
     input_names = []
     
@@ -46,23 +46,40 @@ if __name__ == "__main__":
             # Keep track of all the input filenames.
             input_names.append(input_name)
             
-            output_dir, output_name = os.path.split(input_name)
-            output_dir = os.path.join(output_dir, "dist")
-            output_name, ext = os.path.splitext(output_name)
-            output_name = "%s.min%s" % (output_name, ext)
-            output_name = os.path.join(output_dir, output_name)
-            
             # Find all dependencies.
             dependencies = find_dependencies(input_name)
             
-            # Build all the dependencies wrapped in a closure with
-            # Google Closure Compiler.
+            # Build the output filenames
+            output_dir, output_name = os.path.split(input_name)
+            output_dir = os.path.join(output_dir, "..")
+            
+            output_name, ext = os.path.splitext(output_name)
+            output_min_name = "jquery.%s.min%s" % (output_name, ext)
+            output_name = "jquery.%s%s" % (output_name, ext)
+            
+            output_min_name = os.path.join(output_dir, output_min_name)
+            output_name = os.path.join(output_dir, output_name)
+            
             print u"Building %s" % input_name
+            command = "(echo '(function(jQuery) {' ; echo '' ; %s echo '})(jQuery);')" % (
+                " ".join(["cat %s ; echo '' ; echo '////////////////////' ;" % dependency for dependency in dependencies])
+            )
+            
+            # Create unminified files
             subprocess.call(
-                "(echo '(function(jQuery) {' ; cat %s ; echo '})(jQuery);') | java -jar %s > %s" % (
-                    " ".join(dependencies),
-                    cc_name,
+                "%s > %s" % (
+                    command,
                     output_name,
+                ),
+                shell=True,
+            )            
+            
+            # Create minified files with Google Closure Compiler
+            subprocess.call(
+                "%s | java -jar %s > %s" % (
+                    command,
+                    cc_name,
+                    output_min_name,
                 ),
                 shell=True,
             )

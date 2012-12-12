@@ -1,4 +1,4 @@
-// requires: jquery.platinum-scripts.js, jquery.platinum-lang.js, jquery.platinum-arguments.js
+// requires: scripts.js, lang.js, arguments.js
 
 (function($) {
     
