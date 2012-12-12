@@ -54,8 +54,12 @@ if __name__ == "__main__":
             output_dir = os.path.join(output_dir, "..")
             
             output_name, ext = os.path.splitext(output_name)
-            output_min_name = "jquery.%s.min%s" % (output_name, ext)
-            output_name = "jquery.%s%s" % (output_name, ext)
+            if output_name != "platinum":
+                output_min_name = "jquery.platinum-%s.min%s" % (output_name, ext)
+                output_name = "jquery.platinum-%s%s" % (output_name, ext)
+            else:
+                output_min_name = "jquery.platinum.min.js"
+                output_name = "jquery.platinum.js"
             
             output_min_name = os.path.join(output_dir, output_min_name)
             output_name = os.path.join(output_dir, output_name)
