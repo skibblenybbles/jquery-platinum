@@ -59,7 +59,7 @@ echo ' */' ;
 echo '' ; 
 echo '(function($, window, document) {' ;
 echo '' ;
-echo 'var $p = $.platinum = $.platinum || { };' ;
+echo 'var $pt = $.platinum = $.platinum || { };' ;
 echo '' ;
 %s 
 echo '' ;

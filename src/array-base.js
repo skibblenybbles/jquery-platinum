@@ -1,6 +1,6 @@
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // convert the given array-like object to an Array
@@ -67,6 +67,6 @@
     };
     
     // export the array plugin
-    $p.array = array;
+    $pt.array = array;
     
-})($, $p, window, document);
+})($, $pt, window, document);

@@ -7,13 +7,13 @@
 
 (function($, window, document) {
 
-var $p = $.platinum = $.platinum || { };
+var $pt = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // convert the given array-like object to an Array
@@ -80,17 +80,17 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the array plugin
-    $p.array = array;
+    $pt.array = array;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array,
+    var array = $pt.array,
         lang = { };
     
     // create a function with its "this" bound to that that argument
@@ -109,9 +109,9 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the lang plugin
-    $p.lang = lang;
+    $pt.lang = lang;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 
 ////////////////////////////////////////

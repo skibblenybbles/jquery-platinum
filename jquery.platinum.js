@@ -7,13 +7,13 @@
 
 (function($, window, document) {
 
-var $p = $.platinum = $.platinum || { };
+var $pt = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // convert the given array-like object to an Array
@@ -80,15 +80,15 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the array plugin
-    $p.array = array;
+    $pt.array = array;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var scripts = { };
     
@@ -104,17 +104,17 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the scripts plugin
-    $p.scripts = scripts;
+    $pt.scripts = scripts;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array,
+    var array = $pt.array,
         lang = { };
     
     // create a function with its "this" bound to that that argument
@@ -133,20 +133,20 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the lang plugin
-    $p.lang = lang;
+    $pt.lang = lang;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-analytics.js
 // requires: array-base.js scripts.js, lang.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // the required plugins
-        scripts = $p.scripts,
-        lang = $p.lang,
+        scripts = $pt.scripts,
+        lang = $pt.lang,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -291,17 +291,17 @@ var $p = $.platinum = $.platinum || { };
         };
     
     // export the anlytics plugin
-    $p.analytics = analytics;
+    $pt.analytics = analytics;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-array.js
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array;
+    var array = $pt.array;
     
     // run a function on each item in any array and
     // return a new array populated with values from
@@ -392,7 +392,7 @@ var $p = $.platinum = $.platinum || { };
     };
     
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-platinum.js

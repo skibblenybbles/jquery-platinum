@@ -1,8 +1,8 @@
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array,
+    var array = $pt.array,
         lang = { };
     
     // create a function with its "this" bound to that that argument
@@ -21,6 +21,6 @@
     };
     
     // export the lang plugin
-    $p.lang = lang;
+    $pt.lang = lang;
     
-})($, $p, window, document);
+})($, $pt, window, document);

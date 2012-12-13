@@ -1,11 +1,11 @@
 // requires: array-base.js scripts.js, lang.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // the required plugins
-        scripts = $p.scripts,
-        lang = $p.lang,
+        scripts = $pt.scripts,
+        lang = $pt.lang,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -150,6 +150,6 @@
         };
     
     // export the anlytics plugin
-    $p.analytics = analytics;
+    $pt.analytics = analytics;
     
-})($, $p, window, document);
+})($, $pt, window, document);

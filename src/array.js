@@ -1,8 +1,8 @@
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array;
+    var array = $pt.array;
     
     // run a function on each item in any array and
     // return a new array populated with values from
@@ -93,4 +93,4 @@
     };
     
     
-})($, $p, window, document);
+})($, $pt, window, document);

@@ -1,6 +1,6 @@
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var scripts = { };
     
@@ -16,6 +16,6 @@
     };
     
     // export the scripts plugin
-    $p.scripts = scripts;
+    $pt.scripts = scripts;
     
-})($, $p, window, document);
+})($, $pt, window, document);

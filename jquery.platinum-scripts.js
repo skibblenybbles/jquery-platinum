@@ -7,13 +7,13 @@
 
 (function($, window, document) {
 
-var $p = $.platinum = $.platinum || { };
+var $pt = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var scripts = { };
     
@@ -29,9 +29,9 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the scripts plugin
-    $p.scripts = scripts;
+    $pt.scripts = scripts;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 
 ////////////////////////////////////////

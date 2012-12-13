@@ -7,13 +7,13 @@
 
 (function($, window, document) {
 
-var $p = $.platinum = $.platinum || { };
+var $pt = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
     var 
         // convert the given array-like object to an Array
@@ -80,17 +80,17 @@ var $p = $.platinum = $.platinum || { };
     };
     
     // export the array plugin
-    $p.array = array;
+    $pt.array = array;
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-array.js
 // requires: array-base.js
 
-(function($, $p, window, document) {
+(function($, $pt, window, document) {
     
-    var array = $p.array;
+    var array = $pt.array;
     
     // run a function on each item in any array and
     // return a new array populated with values from
@@ -181,7 +181,7 @@ var $p = $.platinum = $.platinum || { };
     };
     
     
-})($, $p, window, document);
+})($, $pt, window, document);
 
 
 ////////////////////////////////////////
