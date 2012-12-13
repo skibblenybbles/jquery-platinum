@@ -1,8 +1,8 @@
 // requires: 
 
-(function($) {
+(function($, $p, window, document) {
     
-    $.platinum.scripts = {
+    $p.scripts = {
         
         // return a promise to load a script
         load: function(url, options) {
@@ -22,4 +22,4 @@
         }
     };
     
-})(jQuery);
+})($, $p, window, document);

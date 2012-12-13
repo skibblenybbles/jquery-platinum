@@ -5,41 +5,83 @@
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
  */
 
-jQuery.platinum = jQuery.platinum || { };
+(function($, window, document) {
 
-(function(jQuery) {
+var $p = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($) {
+(function($, $p, window, document) {
     
-    $.platinum.array = {
+    var 
+        // regular arrays
+        array = { },
         
-        // run a function for each item in an array
-        each: function(array, fn, that) {
-            var i;
-            for (i = 0; i < array.length; i++) {
-                fn.call(that, array[i], i);
+        // reverse arrays
+        rarray = { };
+    
+    // run a function for each item in an array
+    // includes support for slicing and stepping
+    // and allows negative indexing
+    array.each = function(array, fn, start, end, step) {
+        var i,
+            length = array.length,
+            step = step || 1;
+            start = start === undefined
+                ? step > 0
+                    ? 0
+                    : length -1
+                : start < 0
+                    ? start + length
+                    : start,
+            end = end === undefined
+                ? step > 0
+                    ? length
+                    : -1
+                : end < 0
+                    ? end + length
+                    : end;
+        
+        if (step > 0) {
+            
+            // trim the useless ends
+            start = Math.max(0, start);
+            end = Math.min(length, end);
+            
+            // iterate
+            for (i = start; i < end; i += step) {
+                fn.call(null, array[i], i);
+            }
+            
+        } else {
+            
+            // trim the useless ends
+            start = Math.min(length - 1, start);
+            end = Math.max(-1, end);
+            
+            // iterate
+            for (i = start; i > end; i += step) {
+                fn.call(null, array[i], i);
             }
         }
     };
     
-    $.platinum.array.reverse = {
-        
-        // run a function for each item in an array
-        // in reverse
-        each: function(array, fn, that) {
-            var i = array.length;
-            for (i = array.length - 1; i >= 0; i--) {
-                fn.call(that, array[i], i);
-            }
-        }
+    // run a function for each item in an array
+    // in reverse
+    rarray.each = function(array, fn, start, end, step) {
+        array.each(array, fn, end, start, -step);
     };
     
-})(jQuery);
+    
+    // export the array plugins
+    $p.array = array;
+    $p.rarray = rarray;
+    
+})($, $p, window, document);
+
 
 ////////////////////////////////////////
 
-})(jQuery);
+})(jQuery, window, document);

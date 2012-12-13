@@ -1,12 +1,12 @@
-// requires: scripts.js, lang.js, arguments.js
+// requires: scripts.js, lang.js
 
-(function($) {
+(function($, $p, window, document) {
     
     var 
         // the required plugins
-        jScripts = $.platinum.scripts,
-        jLang = $.platinum.lang,
-        jArguments = $.platinum.arguments,
+        jScripts = $p.scripts,
+        jLang = $p.lang,
+        jArguments = $p.arguments,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -151,6 +151,6 @@
         };
     
     // export the anlytics plugin
-    $.platinum.analytics = analytics;
+    $p.analytics = analytics;
     
-})(jQuery);
+})($, $p, window, document);

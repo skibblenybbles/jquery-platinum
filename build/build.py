@@ -57,15 +57,15 @@ echo ' * Copyright (C) %d Mike Kibbel, MetaMetrics, Inc.' ;
 echo ' * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE' ; 
 echo ' */' ; 
 echo '' ; 
-echo 'jQuery.platinum = jQuery.platinum || { };' ;
-echo ''
-echo '(function(jQuery) {' ;
+echo '(function($, window, document) {' ;
+echo '' ;
+echo 'var $p = $.platinum = $.platinum || { };' ;
 echo '' ;
 %s 
 echo '' ;
 echo '////////////////////////////////////////' ; 
 echo '' ;
-echo '})(jQuery);' )
+echo '})(jQuery, window, document);' )
 """
     command = command.strip()
     command = command % (

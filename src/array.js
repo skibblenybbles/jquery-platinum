@@ -1,9 +1,9 @@
 // requires: array-base.js
 
-(function($) {
+(function($, $p, window, document) {
     
-    var jArray = $.platinum.array,
-        jReverse = $.platinum.array.reverse;
+    var jArray = $p.array,
+        jReverse = $p.array.reverse;
     
     $.extend(jArray, {
         
@@ -255,4 +255,4 @@
         }
     });
     
-})(jQuery);
+})($, $p, window, document);

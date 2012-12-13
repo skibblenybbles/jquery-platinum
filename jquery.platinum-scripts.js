@@ -5,17 +5,17 @@
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
  */
 
-jQuery.platinum = jQuery.platinum || { };
+(function($, window, document) {
 
-(function(jQuery) {
+var $p = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($) {
+(function($, $p, window, document) {
     
-    $.platinum.scripts = {
+    $p.scripts = {
         
         // return a promise to load a script
         load: function(url, options) {
@@ -35,9 +35,9 @@ jQuery.platinum = jQuery.platinum || { };
         }
     };
     
-})(jQuery);
+})($, $p, window, document);
 
 
 ////////////////////////////////////////
 
-})(jQuery);
+})(jQuery, window, document);

@@ -5,17 +5,17 @@
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
  */
 
-jQuery.platinum = jQuery.platinum || { };
+(function($, window, document) {
 
-(function(jQuery) {
+var $p = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($) {
+(function($, $p, window, document) {
     
-    $.platinum.scripts = {
+    $p.scripts = {
         
         // return a promise to load a script
         load: function(url, options) {
@@ -35,76 +35,133 @@ jQuery.platinum = jQuery.platinum || { };
         }
     };
     
-})(jQuery);
+})($, $p, window, document);
 
 ////////////////////////////////////////
-// source: jquery.platinum-arguments.js
+// source: jquery.platinum-array-base.js
 // requires: 
 
-(function($) {
+(function($, $p, window, document) {
     
-    $.platinum.arguments = {
+    var 
+        // regular arrays
+        array = { },
         
-        // convert the given array-like arguments object to a proper Array,
-        // optionally slicing the arguments (positive indices only)
-        array: function(args, start, end) {
+        // reverse arrays
+        rarray = { };
+    
+    // run a function for each item in an array
+    // includes support for slicing and stepping
+    // and allows negative indexing
+    array.each = function(array, fn, start, end, step) {
+        var i,
+            length = array.length,
+            step = step || 1;
+            start = start === undefined
+                ? step > 0
+                    ? 0
+                    : length -1
+                : start < 0
+                    ? start + length
+                    : start,
+            end = end === undefined
+                ? step > 0
+                    ? length
+                    : -1
+                : end < 0
+                    ? end + length
+                    : end;
+        
+        if (step > 0) {
             
-            var values =[],
-                i;
-                
-            start = start || 0;
-            end = Math.min(end || args.length, args.length);
-            for (i = start; i < end; i++) {
-                values.push(args[i]);
+            // trim the useless ends
+            start = Math.max(0, start);
+            end = Math.min(length, end);
+            
+            // iterate
+            for (i = start; i < end; i += step) {
+                fn.call(null, array[i], i);
             }
-            return values;
+            
+        } else {
+            
+            // trim the useless ends
+            start = Math.min(length - 1, start);
+            end = Math.max(-1, end);
+            
+            // iterate
+            for (i = start; i > end; i += step) {
+                fn.call(null, array[i], i);
+            }
         }
     };
     
-})(jQuery);
+    // run a function for each item in an array
+    // in reverse
+    rarray.each = function(array, fn, start, end, step) {
+        array.each(array, fn, end, start, -step);
+    };
+    
+    
+    // export the array plugins
+    $p.array = array;
+    $p.rarray = rarray;
+    
+})($, $p, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
-// requires: arguments.js
+// requires: array-base.js
 
-(function($) {
+(function($, $p, window, document) {
     
-    var jArguments = $.platinum.arguments;
-    
-    $.platinum.lang = {
+    var 
+        // the array plugin
+        array = $p.array,
         
-        // create a function bound to "this" with curried arguments
-        hitch: function(that, fn) {
-            return (function(that, fn, args) {
-                return function() {
-                    return fn.apply(that, args.concat(arguments));
-                };
-            })(that, fn, jArguments(arguments, 2));
-        },
+        // define the array plugin
+        lang = {
+                    
+            // a function that returns its argument
+            identity: function(value) {
+                return value;
+            },
         
-        // create an unbound function with curried arguments
-        partial: function(fn) {
-            return (function(fn, args) {
-                return function() {
-                    return fn.apply(null, args.concat(arguments));
-                };
-            })(fn, jArguments(arguments, 1));
-        }
-    };
+            // create a function bound to "this" with curried arguments
+            hitch: function(that, fn) {
+                return (function(that, fn, args) {
+                    return function() {
+                        return fn.apply(that, args.concat(arguments));
+                    };
+                })(that, fn, jArguments(arguments, 2));
+            },
+        
+            // create an unbound function with curried arguments
+            partial: function(fn) {
+                return (function(fn, args) {
+                    return function() {
+                        return fn.apply(null, args.concat(arguments));
+                    };
+                })(fn, jArguments(arguments, 1));
+            }
+        };
     
-})(jQuery);
+    // export the array plugin
+    $p.lang = lang;
+    
+})($, $p, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-analytics.js
-// requires: scripts.js, lang.js, arguments.js
+// requires: scripts.js, lang.js
 
-(function($) {
+(function($, $p, window, document) {
     
     var 
         // the required plugins
-        jScripts = $.platinum.scripts,
-        jLang = $.platinum.lang,
-        jArguments = $.platinum.arguments,
+        jScripts = $p.scripts,
+        jLang = $p.lang,
+        jArguments = $p.arguments,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -249,11 +306,11 @@ jQuery.platinum = jQuery.platinum || { };
         };
     
     // export the anlytics plugin
-    $.platinum.analytics = analytics;
+    $p.analytics = analytics;
     
-})(jQuery);
+})($, $p, window, document);
 
 
 ////////////////////////////////////////
 
-})(jQuery);
+})(jQuery, window, document);
