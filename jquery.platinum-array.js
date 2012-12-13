@@ -16,27 +16,32 @@ var $p = $.platinum = $.platinum || { };
 (function($, $p, window, document) {
     
     var 
-        // regular arrays
-        array = { },
-        
-        // reverse arrays
-        rarray = { };
+        // convert the given array-like object to an Array
+        // using optional slicing, stepping and negative indexing
+        array = function(iterable, start, end, step) {
+            var values = [];
+            array.each(iterable, function(value) {
+                values.push(value);
+            }, start, end, step);
+            return values;
+        };
     
-    // run a function for each item in an array
-    // includes support for slicing and stepping
-    // and allows negative indexing
-    array.each = function(array, fn, start, end, step) {
+    // run a function for each item in an array-like object
+    // if the function returns false (strictly), the loop
+    // will terminate
+    array.each = function(iterable, fn, start, end, step) {
         var i,
-            length = array.length,
+            value,
+            length = iterable.length,
             step = step || 1;
-            start = start === undefined
+            start = typeof start !== "number"
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = end === undefined
+            end = typeof end !== "number"
                 ? step > 0
                     ? length
                     : -1
@@ -52,7 +57,10 @@ var $p = $.platinum = $.platinum || { };
             
             // iterate
             for (i = start; i < end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
             
         } else {
@@ -63,21 +71,16 @@ var $p = $.platinum = $.platinum || { };
             
             // iterate
             for (i = start; i > end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
         }
     };
     
-    // run a function for each item in an array
-    // in reverse
-    rarray.each = function(array, fn, start, end, step) {
-        array.each(array, fn, end, start, -step);
-    };
-    
-    
-    // export the array plugins
+    // export the array plugin
     $p.array = array;
-    $p.rarray = rarray;
     
 })($, $p, window, document);
 
@@ -87,258 +90,96 @@ var $p = $.platinum = $.platinum || { };
 
 (function($, $p, window, document) {
     
-    var jArray = $p.array,
-        jReverse = $p.array.reverse;
+    var array = $p.array;
     
-    $.extend(jArray, {
-        
-        // run a function for each item in an array
-        each: function(array, fn, that) {
-            var i;
-            for (i = 0; i < array.length; i++) {
-                fn.call(that, array[i], i);
+    // run a function on each item in any array and
+    // return a new array populated with values from
+    // the origina array where the function produced
+    // a truthy value
+    array.filter = function(iterable, fn, start, end, step) {
+        var results = [],
+            result;
+        array.each(iterable, function(value, i) {
+            result = fn(value, i);
+            if (result) {
+                results.push(value);
             }
-        },
-        
-        // run a function on each item in an array to
-        // produce a new array of the resulting values
-        map: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = 0; i < array.length; i++) {
-                values.push(fn.call(that, array[i], i));
-            }
-            return values;
-        },
-        
-        // reduce an array by applying a binary operator
-        // that accumulates onto an initial value
-        reduce: function(array, fn, value, that) {
-            var i;
-            for (i = 0; i < array.length; i++) {
-                value = fn.call(that, value, array[i], i);
-            }
-            return value;
-        },
-        
-        // run a function on each item in an array until a 
-        // falsy result is encountered, then return the
-        // final result
-        all: function(array, fn, that) {
-            var i,
-                result = true;
-            for (i = 0; i < array.length; i++) {
-                result = result && fn.call(that, array[i], i);
-                if (!result) {
-                    return result;
-                }
-            }
-            return result;
-        },
-        
-        // run a function on each item in an array until a
-        // truthy result is encountered, then return the
-        // finaly result
-        any: function(array, fn, that) {
-            var i,
-                result = false;
-            for (i = 0; i < array.length; i++) {
-                result = result || fn.call(that, array[i], i);
-                if (!result) {
-                    return result;
-                }
-            }
-            return result;
-        },
-        
-        // run a function on each item in an array and
-        // return a new array populated with values
-        // from the original array where the function
-        // produced a truthy result
-        filter: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = 0; i < array.length; i++) {
-                if (fn.call(that, array[i], i)) {
-                    values.push(array[i], i);
-                }
-            }
-            return values;
-        },
-        
-        // run a predicate on each item in an array until a
-        // false result (strictly) is encountered, then
-        // return whether every result was true
-        // (slightly faster than "all")
-        every: function(array, fn, that) {
-            var i,
-                result = true;
-            for (i = 0; i < array.length; i++) {
-                result = fn.call(that, array[i], i) === true;
-                if (result === false) {
-                    break;
-                }
-            }
-            return result;
-        },
-        
-        // run a predicate on each item in an array until a
-        // true result (strictly) is encountered, then
-        // return whether any result was true
-        // (slightly faster than "any")
-        some: function(array, fn, that) {
-            var i,
-                result = false;
-            for (i = 0; i < array.length; i++) {
-                result = fn.call(that, array[i], i) === true;
-                if (result === true) {
-                    break;
-                }
-            }
-            return result;
-        },
-        
-        // run a predicate on each item in an array and
-        // return a new array populated with values
-        // from the original array where the predicate
-        // produced a true (strictly) result
-        which: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = 0; i < array.length; i++) {
-                if (fn.call(that, array[i], i)) {
-                    values.push(array[i], i);
-                }
-            }
-            return values;
-        }
-    });
+        }, start, end, step);
+        return results;
+    };
     
-    $.extend(jReverse, {
-        
-        // run a function for each item in an array
-        // in reverse
-        each: function(array, fn, that) {
-            var i = array.length;
-            for (i = array.length - 1; i >= 0; i--) {
-                fn.call(that, array[i], i);
+    // run a function on each item in an array until a falsy result
+    // is encountered and return the final result
+    array.every = function(iterable, fn, start, end, step) {
+        var result;
+        array.each(iterable, function(value, i) {
+            result = fn(value, i);
+            if (!result) {
+                return false;
             }
-        },
-        
-        // run a function on each item in an array in 
-        // reverse to produce a new array of the resulting
-        // values
-        map: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = array.length - 1; i >= 0; i--) {
-                values.push(fn.call(that, array[i], i));
+        }, start, end, step);
+        return result;
+    };
+    
+    // run a function on each item in an array until a truthy result
+    // is encountered and return the final result
+    array.some = function(iterable, fn, start, end, step) {
+        var result;
+        array.each(iterable, function(value, i) {
+            result = fn(value, i);
+            if (result) {
+                return false;
             }
-            return values;
-        },
-        
-        // reduce an array by applying a binary operator
-        // that accumulates onto an initial value in reverse
-        reduce: function(array, fn, value, that) {
-            var i;
-            for (i = array.length - 1; i >= 0; i--) {
-                value = fn.call(that, value, array[i], i);
+        }, start, end, step);
+        return result;
+    };
+    
+    // run a function on each item in an array until a falsy result
+    // is encountered and return the final value processed
+    array.all = function(iterable, fn, start, end, step) {
+        var result;
+        array.each(iterable, function(value, i) {
+            if (!fn(value, i)) {
+                result = value;
+                return false;
             }
-            return value;
-        },
-        
-        // run a function on each item in an array in
-        // reverse until a falsy result is encountered,
-        // then return the final result
-        all: function(array, fn, that) {
-            var i,
-                result = true;
-            for (i = array.length - 1; i >= 0; i--) {
-                result = result && fn.call(that, array[i], i);
-                if (!result) {
-                    return result;
-                }
+        }, start, end, step);
+        return result;
+    };
+    
+    // run a function on each item in an array until a truthy result
+    // is encountered and return the final value processed
+    array.any = function(iterable, fn, start, end, step) {
+        var result;
+        array.each(iterable, function(value, i) {
+            if (fn(value, i)) {
+                result = value;
+                return false;
             }
-            return result;
-        },
-        
-        // run a function on each item in an array in
-        // reverse until a truthy result is encountered,
-        // then return the finaly result
-        any: function(array, fn, that) {
-            var i,
-                result = false;
-            for (i = array.length - 1; i >= 0; i--) {
-                result = result || fn.call(that, array[i], i);
-                if (!result) {
-                    return result;
-                }
-            }
-            return result;
-        },
-        
-        // run a function on each item in an array in
-        // reverse and return a new array populated with
-        // values from the original array where the function
-        // produced a truthy result
-        filter: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = array.length - 1; i >= 0; i--) {
-                if (fn.call(that, array[i], i)) {
-                    values.push(array[i], i);
-                }
-            }
-            return values;
-        },
-        
-        // run a predicate on each item in an array in
-        // reverse until a false result (strictly) is
-        // encountered, then return whether every result
-        // was true (slightly faster than "all")
-        every: function(array, fn, that) {
-            var i,
-                result = true;
-            for (i = array.length - 1; i >= 0; i--) {
-                result = fn.call(that, array[i], i) === true;
-                if (result === false) {
-                    break;
-                }
-            }
-            return result;
-        },
-        
-        // run a predicate on each item in an array in 
-        // reverse until a true result (strictly) is 
-        // encountered, then return whether any result
-        // was true (slightly faster than "any")
-        some: function(array, fn, that) {
-            var i,
-                result = false;
-            for (i = array.length - 1; i >= 0; i--) {
-                result = fn.call(that, array[i], i) === true;
-                if (result === true) {
-                    break;
-                }
-            }
-            return result;
-        },
-        
-        // run a predicate on each item in an array in
-        // reverse and return a new array populated with
-        // values from the original array where the
-        // predicate produced a true (strictly) result
-        which: function(array, fn, that) {
-            var i,
-                values = [];
-            for (i = array.length - 1; i >= 0; i--) {
-                if (fn.call(that, array[i], i)) {
-                    values.push(array[i], i);
-                }
-            }
-            return values;
-        }
-    });
+        }, start, end, step);
+        return result;
+    };
+    
+    // run a function on each item in an array to produce
+    // a new array of the function's results
+    array.map = function(iterable, fn, start, end, step) {
+        var results = [];
+        array.each(iterable, function(value, i) {
+            results.push(fn(value, i));
+        }, start, end, step);
+        return results;
+    };
+    
+    // reduce an array by applying a binary operator
+    // that accumulates results onto an initial value
+    array.reduce = function(iterable, fn, initial, start, end, step) {
+        var result = initial;
+        array.each(iterable, function(value, i) {
+            result = fn(value, result, i);
+        }, start, end, step);
+        return result;
+    };
+    
     
 })($, $p, window, document);
 

@@ -10,61 +10,38 @@
 var $p = $.platinum = $.platinum || { };
 
 ////////////////////////////////////////
-// source: jquery.platinum-scripts.js
-// requires: 
-
-(function($, $p, window, document) {
-    
-    $p.scripts = {
-        
-        // return a promise to load a script
-        load: function(url, options) {
-            
-            // allow override of any option except for 
-            // dataType, cache, and url
-            options = $.extend(
-                options || { }, 
-                {
-                    dataType: "script",
-                    cache: true,
-                    url: url
-                }
-            );
-            
-            return $.ajax(options);
-        }
-    };
-    
-})($, $p, window, document);
-
-////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: 
 
 (function($, $p, window, document) {
     
     var 
-        // regular arrays
-        array = { },
-        
-        // reverse arrays
-        rarray = { };
+        // convert the given array-like object to an Array
+        // using optional slicing, stepping and negative indexing
+        array = function(iterable, start, end, step) {
+            var values = [];
+            array.each(iterable, function(value) {
+                values.push(value);
+            }, start, end, step);
+            return values;
+        };
     
-    // run a function for each item in an array
-    // includes support for slicing and stepping
-    // and allows negative indexing
-    array.each = function(array, fn, start, end, step) {
+    // run a function for each item in an array-like object
+    // if the function returns false (strictly), the loop
+    // will terminate
+    array.each = function(iterable, fn, start, end, step) {
         var i,
-            length = array.length,
+            value,
+            length = iterable.length,
             step = step || 1;
-            start = start === undefined
+            start = typeof start !== "number"
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = end === undefined
+            end = typeof end !== "number"
                 ? step > 0
                     ? length
                     : -1
@@ -80,7 +57,10 @@ var $p = $.platinum = $.platinum || { };
             
             // iterate
             for (i = start; i < end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
             
         } else {
@@ -91,21 +71,40 @@ var $p = $.platinum = $.platinum || { };
             
             // iterate
             for (i = start; i > end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
         }
     };
     
-    // run a function for each item in an array
-    // in reverse
-    rarray.each = function(array, fn, start, end, step) {
-        array.each(array, fn, end, start, -step);
+    // export the array plugin
+    $p.array = array;
+    
+})($, $p, window, document);
+
+////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: 
+
+(function($, $p, window, document) {
+    
+    var scripts = { };
+    
+    // return a promise to load a script
+    scripts.load = function(url, options) {
+        // allow override of any option except for dataType, cache and url
+        options = $.extend(options || { }, {
+            dataType: "script",
+            cache: true,
+            url: url
+        });
+        return $.ajax(options);
     };
     
-    
-    // export the array plugins
-    $p.array = array;
-    $p.rarray = rarray;
+    // export the scripts plugin
+    $p.scripts = scripts;
     
 })($, $p, window, document);
 
@@ -115,53 +114,39 @@ var $p = $.platinum = $.platinum || { };
 
 (function($, $p, window, document) {
     
-    var 
-        // the array plugin
-        array = $p.array,
-        
-        // define the array plugin
-        lang = {
-                    
-            // a function that returns its argument
-            identity: function(value) {
-                return value;
-            },
-        
-            // create a function bound to "this" with curried arguments
-            hitch: function(that, fn) {
-                return (function(that, fn, args) {
-                    return function() {
-                        return fn.apply(that, args.concat(arguments));
-                    };
-                })(that, fn, jArguments(arguments, 2));
-            },
-        
-            // create an unbound function with curried arguments
-            partial: function(fn) {
-                return (function(fn, args) {
-                    return function() {
-                        return fn.apply(null, args.concat(arguments));
-                    };
-                })(fn, jArguments(arguments, 1));
-            }
-        };
+    var array = $p.array,
+        lang = { };
     
-    // export the array plugin
+    // create a function with its "this" bound to that that argument
+    // and optional curried arguments
+    lang.hitch = function(that, fn) {
+        return (function(that, fn, args) {
+            return function() {
+                return fn.apply(that, args.concat(arguments));
+            };
+        })(that, fn, array(arguments, 2));
+    };
+
+    // create an unbound function with curried arguments
+    lang.partial = function(fn) {
+        return lang.hitch(null, fn, array(arguments, 1));
+    };
+    
+    // export the lang plugin
     $p.lang = lang;
     
 })($, $p, window, document);
 
 ////////////////////////////////////////
 // source: jquery.platinum-analytics.js
-// requires: scripts.js, lang.js
+// requires: array-base.js scripts.js, lang.js
 
 (function($, $p, window, document) {
     
     var 
         // the required plugins
-        jScripts = $p.scripts,
-        jLang = $p.lang,
-        jArguments = $p.arguments,
+        scripts = $p.scripts,
+        lang = $p.lang,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -241,7 +226,7 @@ var $p = $.platinum = $.platinum || { };
                         
                         // create the callback that will run the given callback
                         window._gaq.push(lang.partial(function(method, callback, args) {
-                                
+                            
                             return function() {
                                 // get the default tracker
                                 var tracker = window._gat._getTrackerByName();
@@ -250,7 +235,7 @@ var $p = $.platinum = $.platinum || { };
                                 callback(tracker[method].apply(tracker, args));
                             };
                         
-                        }, method, callback, jArguments(arguments, 1)));
+                        }, method, callback, array(arguments, 1)));
                     };
                 }, methods[name]);
                 
@@ -299,7 +284,7 @@ var $p = $.platinum = $.platinum || { };
             }
         
             // load GA
-            jScripts.load(
+            scripts.load(
                 (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
                 ".google-analytics.com/ga.js"
             );

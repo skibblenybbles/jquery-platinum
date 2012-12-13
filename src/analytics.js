@@ -1,12 +1,11 @@
-// requires: scripts.js, lang.js
+// requires: array-base.js scripts.js, lang.js
 
 (function($, $p, window, document) {
     
     var 
         // the required plugins
-        jScripts = $p.scripts,
-        jLang = $p.lang,
-        jArguments = $p.arguments,
+        scripts = $p.scripts,
+        lang = $p.lang,
         
         // all of the non-deprecated Google Analytics pageTracker methods,
         // (as of 12/11/2012)
@@ -86,7 +85,7 @@
                         
                         // create the callback that will run the given callback
                         window._gaq.push(lang.partial(function(method, callback, args) {
-                                
+                            
                             return function() {
                                 // get the default tracker
                                 var tracker = window._gat._getTrackerByName();
@@ -95,7 +94,7 @@
                                 callback(tracker[method].apply(tracker, args));
                             };
                         
-                        }, method, callback, jArguments(arguments, 1)));
+                        }, method, callback, array(arguments, 1)));
                     };
                 }, methods[name]);
                 
@@ -144,7 +143,7 @@
             }
         
             // load GA
-            jScripts.load(
+            scripts.load(
                 (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
                 ".google-analytics.com/ga.js"
             );

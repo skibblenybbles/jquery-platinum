@@ -3,27 +3,32 @@
 (function($, $p, window, document) {
     
     var 
-        // regular arrays
-        array = { },
-        
-        // reverse arrays
-        rarray = { };
+        // convert the given array-like object to an Array
+        // using optional slicing, stepping and negative indexing
+        array = function(iterable, start, end, step) {
+            var values = [];
+            array.each(iterable, function(value) {
+                values.push(value);
+            }, start, end, step);
+            return values;
+        };
     
-    // run a function for each item in an array
-    // includes support for slicing and stepping
-    // and allows negative indexing
-    array.each = function(array, fn, start, end, step) {
+    // run a function for each item in an array-like object
+    // if the function returns false (strictly), the loop
+    // will terminate
+    array.each = function(iterable, fn, start, end, step) {
         var i,
-            length = array.length,
+            value,
+            length = iterable.length,
             step = step || 1;
-            start = start === undefined
+            start = typeof start !== "number"
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = end === undefined
+            end = typeof end !== "number"
                 ? step > 0
                     ? length
                     : -1
@@ -39,7 +44,10 @@
             
             // iterate
             for (i = start; i < end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
             
         } else {
@@ -50,20 +58,15 @@
             
             // iterate
             for (i = start; i > end; i += step) {
-                fn.call(null, array[i], i);
+                value = fn.call(null, iterable[i], i);
+                if (value === false) {
+                    return;
+                }
             }
         }
     };
     
-    // run a function for each item in an array
-    // in reverse
-    rarray.each = function(array, fn, start, end, step) {
-        array.each(array, fn, end, start, -step);
-    };
-    
-    
-    // export the array plugins
+    // export the array plugin
     $p.array = array;
-    $p.rarray = rarray;
     
 })($, $p, window, document);
