@@ -5,8 +5,8 @@
     var array = $pt.array,
         lang = { };
     
-    // create a function with its "this" bound to that that argument
-    // and optional curried arguments
+    // create a function with its "this" bound to the "that" argument
+    // and curry any additional arguments
     lang.hitch = function(that, fn) {
         return (function(that, fn, args) {
             return function() {
