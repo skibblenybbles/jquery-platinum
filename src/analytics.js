@@ -100,7 +100,7 @@
                     });
                     
                     // push the commands
-                    window._gaq.push(commands);
+                    window._gaq.push.apply(window._gaq, commands);
                     return this;
                 };
                 
@@ -236,15 +236,14 @@
             array.each(this.trackers, function(tracker) {
                 allTrackersSet[tracker] = true;
             });
-            setAccount.apply(this, array(arguments));
+            return setAccount.apply(this, array(arguments));
         };
         
     })(Analytics.prototype.setAccount);
     
-    // mix the Analytics methods into the analytics plugin
-    // and set up the analytics plugin to use the default tracker
-    $.extend(analytics, Analytics.prototype);
-    lang.hitch(analytics, Analytics)([""]);
+    // make the analytics plugin delegate to the methods
+    // of an Analytics instance bound to the default tracker, ""
+    lang.delegate(analytics, new Analytics([""]));
     
     // load Google Analytics
     window._gaq = window._gaq || [];

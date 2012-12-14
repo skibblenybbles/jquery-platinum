@@ -195,7 +195,6 @@ window.$pt.noConflict = noConflict;
         return result;
     };
     
-    
 })($, $pt, window, document);
 
 

@@ -92,5 +92,4 @@
         return result;
     };
     
-    
 })($, $pt, window, document);

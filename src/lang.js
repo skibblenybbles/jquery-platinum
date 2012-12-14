@@ -24,6 +24,21 @@
         })(fn, array(arguments, 1));
     };
     
+    // for the given target object, delegate all methods that 
+    // appear in the source object but not in the target
+    // excluding "constructor"
+    lang.delegate = function(target, source) {
+        var name;
+        for (name in source) {
+            if (typeof source[name] === "function" &&
+                name !== "constructor" &&
+                !(name in target)
+            ) {
+                target[name] = lang.hitch(source, source[name]);
+            }
+        }
+    };
+    
     // export the lang plugin
     $pt.lang = lang;
     

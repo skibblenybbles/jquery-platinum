@@ -127,6 +127,21 @@ window.$pt.noConflict = noConflict;
         })(fn, array(arguments, 1));
     };
     
+    // for the given target object, delegate all methods that 
+    // appear in the source object but not in the target
+    // excluding "constructor"
+    lang.delegate = function(target, source) {
+        var name;
+        for (name in source) {
+            if (typeof source[name] === "function" &&
+                name !== "constructor" &&
+                !(name in target)
+            ) {
+                target[name] = lang.hitch(source, source[name]);
+            }
+        }
+    };
+    
     // export the lang plugin
     $pt.lang = lang;
     
@@ -260,7 +275,7 @@ window.$pt.noConflict = noConflict;
                     });
                     
                     // push the commands
-                    window._gaq.push(commands);
+                    window._gaq.push.apply(window._gaq, commands);
                     return this;
                 };
                 
@@ -396,15 +411,14 @@ window.$pt.noConflict = noConflict;
             array.each(this.trackers, function(tracker) {
                 allTrackersSet[tracker] = true;
             });
-            setAccount.apply(this, array(arguments));
+            return setAccount.apply(this, array(arguments));
         };
         
     })(Analytics.prototype.setAccount);
     
-    // mix the Analytics methods into the analytics plugin
-    // and set up the analytics plugin to use the default tracker
-    $.extend(analytics, Analytics.prototype);
-    lang.hitch(analytics, Analytics)([""]);
+    // make the analytics plugin delegate to the methods
+    // of an Analytics instance bound to the default tracker, ""
+    lang.delegate(analytics, new Analytics([""]));
     
     // load Google Analytics
     window._gaq = window._gaq || [];
@@ -513,7 +527,6 @@ window.$pt.noConflict = noConflict;
         }, start, end, step);
         return result;
     };
-    
     
 })($, $pt, window, document);
 
