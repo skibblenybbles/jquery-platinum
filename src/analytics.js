@@ -11,17 +11,17 @@
         // all known trackers as an Array for easy iteration
         allTrackers = [],
         
-        // all known trackers as a set, storing a boolean indicating
-        // whether "setAccount" has been called for the tracker yet
-        // (commands sent to a tracker will be ignored until "setAccount"
-        // is called)
+        // all known trackers mapped to a boolean indicating whether
+        // "setAccount" has been called for the tracker
+        // commands sent to a tracker will be ignored until "setAccount"
+        // is called
         allTrackersSet = { },
         
         // the Analytics constructor
         Analytics = function(trackers) {
             
             // update all known trackers, but skip
-            // if we were just passed all trackers
+            // if we were passed all trackers
             if (trackers !== allTrackers) {                
                 array.each(trackers, function(tracker) {
                     if (!allTrackersSet.hasOwnProperty(tracker)) {
@@ -122,22 +122,23 @@
                         return;
                     }
                     
-                    // for each of our initialized trackers, push the callbacks that 
-                    // will invoke the given callback, passing the value returned by
-                    // each requested tracker's callback and the tracker object
+                    // for each of our initialized trackers, create a function that 
+                    // will call the tracker's method and invoke the given callback,
+                    // passing it the value returned by the tracker's method
+                    // and the tracker object
                     array.each(this.trackers, function(tracker) {
                         
                         if (allTrackersSet[tracker]) {
                             
                             commands.push(
                                 lang.partial(function(tracker, method, callback, args) {
-                                
+                                    
                                     // get the requested tracker
                                     tracker = window._gat._getTrackerByName(tracker);
                                     
                                     // run the callback with the tracker method's result
                                     callback(tracker[method].apply(tracker, args), tracker);
-                                
+                                    
                                 }, tracker, method, callback, args)
                             );
                         }
@@ -240,7 +241,7 @@
         
     })(Analytics.prototype.setAccount);
     
-    // mix the Analytics methods into our analytics plugin
+    // mix the Analytics methods into the analytics plugin
     // and set up the analytics plugin to use the default tracker
     $.extend(analytics, Analytics.prototype);
     lang.hitch(analytics, Analytics)([""]);
