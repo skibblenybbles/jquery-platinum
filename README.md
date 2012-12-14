@@ -21,7 +21,7 @@ Overview
 --------
 
 The easiest way to use the project is to
-<a target="_blank" href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum.min.js">download the current minified source</a>,
+<a href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum.min.js">download the current minified source</a>,
 add it to your website's static media and include it on your website's pages after you include jQuery:
 
 ```html
@@ -33,16 +33,16 @@ The script adds a `$pt` global variable which you can use to conveniently access
 jQuery Platinum. The utilities are also available on the jQuery object at `jQuery.platinum` or `$.platinum`.
 
 If you don't like the global `$pt` variable, you can remove it by calling `$pt.noConflict()`, which works
-just like jQuery's <code><a target="_blank" href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
+just like jQuery's <code><a href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
 
 For more advanced usage, you can download a specific plugin, such as
-<a target="_blank" href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js">jquery.platinum-analytics.js</a>.
+<a href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js">jquery.platinum-analytics.js</a>.
 Or, you can fork the project and modify the
-<a target="_blank" href="https://github.com/skibblenybbles/jquery-platinum/blob/master/build/build.py">build script</a>.
+<a href="https://github.com/skibblenybbles/jquery-platinum/blob/master/build/build.py">build script</a>.
 The build script requires Python (for the script) and Java (for the included Google Closure Compiler).
 I have plans to implement a useful command line interface for creating custom builds, but I am focusing on the
 JavaScript at this point.
 
 The following sections describe all of the utilities and plugins provided by each jquery.platinum*.js script.
-<a target="_blank" href="https://github.com/skibblenybbles/jquery-platinum/blob/master/src/jquery.platinum.js">jquery.platinum.js</a>
+<a href="https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js">jquery.platinum.js</a>
 contains the full build of all the utilities and plugins.
