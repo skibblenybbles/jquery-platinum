@@ -56,7 +56,7 @@ provided by native JavaScript and jQuery, but ultimately it is more expressive. 
 Arrays or array-like objects that have a `.length` attribute zero-based indexing, e.g. the `arguments` object
 that is available in a function body can be manipulated with these functions.
 
-#### `$pt.array(values, [start, end, step])`
+### `$pt.array(values, [start, end, step])`
 
 Takes a JavaScript Array or array-like object and converts it to a JavaScript Array. Optionally
 slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
@@ -67,7 +67,7 @@ from the last index in the array.
 The effect is to create an expressive array utility that mimics the slicing and stepping provided
 by Python's list implementation.
 
-##### Arguments:
+#### Arguments:
 
 *   `values` a JavaScript or Array or array-like object.
 *   `start` (optional) the index into the array where the iteration will start. It may be negative to index
@@ -80,6 +80,6 @@ by Python's list implementation.
     values to iterate forward and negative values to iterate in reverse. A value of `0` will be changed to `1` to
     avoid infinite iteration.
 
-##### Returns:
+#### Returns:
 
 A new JavaScript Array with sliced and stepped values from the original `values` argument.
