@@ -340,11 +340,11 @@ most common case of loading GA and tracking a pageview very simple, but it also 
 analytics requirements on sites with multiple GA trackers.
 
 The functions provided by this script each return an opaque object that implements the GA methods. Rather
-than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write a more natural
-`$pt.analytics.trackPageview('/some-url/')` instead.
+than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write the more natural
+syntax `$pt.analytics.trackPageview('/some-url/')` instead.
 
-You can also chain GA methods together, because each function in the `$pt.analytics` returns the opaque
-analytics object. Fore example, you can write a chain of commands like:
+Each function in `$pt.analytics` returns the opaque analytics object, so you can chain GA methods
+together. Fore example, you can write a chain of commands like:
 
 ```javascript
 $pt.analytics
@@ -359,16 +359,16 @@ _gaq.push(['_trackPageview']);
 ```
 
 The above examples all assume usage of the "default tracker" whose name is `""`, the empty string.
-Another common pattern is to use a "rollup tracker" for all of your Web properties and a site-specific
-tracker for each site. With `$pt.analytics`, you can choose a tracker object by invoking `$pt.analytics`
-as a function and passing it the names of the trackers you would like to create and use:
+Another common pattern is to use a "rollup tracker" for all of your websites and a site-specific
+tracker for each website. With `$pt.analytics`, you can "choose" a tracker object by calling
+`$pt.analytics` as a function and passing it the names of the trackers you would like to use:
 
 ```javascript
-$.pt.analytics("rollupTracker")
+$pt.analytics("rollupTracker")
     .setAccount("UA-XXXXXXXX-1")
     .trackPageview();
 
-$.pt.analytics("siteTracker")
+$pt.analytics("siteTracker")
     .setAccount("UA-XXXXXXXX-2")
     .trackPageview();
 
@@ -401,7 +401,7 @@ $pt.analytics("rollupTracker", "siteTracker")
     .trackPageview();
 ```
 
-An alternative, equivalent syntax allows you to pass an array to $pt.analytics(...)
+An alternative, equivalent syntax allows you to pass an array to `$pt.analytics(...)`
 
 ```javascript
 // set up the trackers
@@ -414,7 +414,7 @@ $pt.analytics(["rollupTracker", "siteTracker"])
     .trackPageview();
 ```
 
-Of course, we could store the tracker names in an Array and pass that:
+Of course, we could store the tracker names in an array and pass that:
 
 ```javascript
 var trackers = ["rollupTracker", "siteTracker"];
