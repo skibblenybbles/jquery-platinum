@@ -87,7 +87,6 @@ A new JavaScript Array with sliced and stepped values from the original `values`
 #### Example
 
 ```javascript
-// create an array to use for experiments
 var values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 // create a new array with only the first item
@@ -116,7 +115,6 @@ console.log($pt.array(values, -1, -9, -3));
 // output: [10, 7, 4]
 ```
 
-*******************
 
 ### `$pt.array.each(values, fn, [start, end, stop])`
 
@@ -136,4 +134,26 @@ Argument    | Description
 #### Returns
 
 `undefined` (no return value)
+
+#### Example
+
+```javascript
+var values = ["hello", "there", "how", "are", "you", "i", "am", "fine"];
+
+// log the first 5 values
+$pt.array.each(values, function(value) { console.log(value); }, 0, 5);
+// output:
+// hello
+// there
+// how
+// are
+// you
+
+// log the last 3 values in reverse
+$pt.array.each(values, function(value) { console.log(value); }, -1, -4, -1);
+// output:
+// fine
+// am
+// i
+```
 
