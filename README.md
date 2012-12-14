@@ -246,7 +246,7 @@ window.prop = "And I am the window";
 log();
 // output: And I am the window
 
-// overwrite log(), by setting it to the function created by hitching owner's log() to owner
+// overwrite log() by setting it to the function created by hitching owner's log() to owner
 log = $pt.lang.hitch(owner, owner.log);
 
 // call it
@@ -570,7 +570,7 @@ tracker named `""`.
 ### `$pt.analytics([trackerName ... | trackerNameArray | "*"])`
 
 This function returns an opaque object that wraps the GA methods bound to the tracker(s) specified by
-the names in `trackerName ...`, `trackerNamesArray` or all trackers if `"*"` is passed. If no arguments
+the names in `trackerName ...`, `trackerNameArray` or all trackers if `"*"` is passed. If no arguments
 are passed, the returned opaque object will be bound to the default tracker named `""`.
 
 The function also allows you to mix a variable number of string and array arguments, but this
@@ -588,7 +588,7 @@ Parameter           | Description
 --------------------|------------
 `trackerName ...`   | a variable number of string names for trackers.
 `trackerNameArray`  | an array of string names for trackers.
-`"*"`               | a special argument that specifies all trackers that have been initialized with `$pt.analytics.setAccount(...)`.
+`"*"`               | a special argument that specifies all trackers that have been initialized with `$pt.analytics(...).setAccount(...)`.
 
 #### Returns
 
@@ -616,3 +616,20 @@ An opaque object that wraps the GA methods bound to tracker(s) specified by `$pt
 After calling `setAccount(...)`, the other methods on the opaque wrapper object will work as expected.
 See the examples in the discussion above for sample usage.
 
+
+### `$pt.analytics.always(...)`
+### `$pt.analytics.done(...)`
+### `$pt.analytics.fail(...)`
+### `$pt.analytics.pipe(...)`
+### `$pt.analytics.progress(...)`
+### `$pt.analytics.promise(...)`
+### `$pt.analytics.state(...)`
+### `$pt.analytics.then(...)`
+
+Since jquery.platinum-analytics.js loads ga.js for you, you may have a use case where you need to check
+whether GA has loaded or perform some action after it does load. The `$pt.analtyics` object delegates
+to the methods of the promise returned from the call to `$pt.scripts.load(...)` that loads ga.js. For more
+information, see jQuery's documentation on
+<a target="_blank" href="http://api.jquery.com/category/deferred-object/">Deferred objects</a> and how
+they are used with calls to 
+<a target="_blank" href="http://api.jquery.com/jQuery.ajax/">`$.ajax()`</a>.

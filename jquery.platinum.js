@@ -390,7 +390,10 @@ window.$pt.noConflict = noConflict;
             "getServiceMode",
             "getVersion",
             "getVisitorCustomVar"
-        ];
+        ],
+        
+        // the promise to load the script
+        scriptPromise;
     
     // add push methods to the Analytics prototype
     array.each(pushMethods, function(method) {
@@ -416,16 +419,23 @@ window.$pt.noConflict = noConflict;
         
     })(Analytics.prototype.setAccount);
     
+    // load Google Analytics and keep the resulting promise
+    window._gaq = window._gaq || [];
+    scriptPromise = scripts.load(
+        (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
+        ".google-analytics.com/ga.js"
+    ).promise();
+    
     // make the analytics plugin delegate to the methods
     // of an Analytics instance bound to the default tracker, ""
     lang.delegate(analytics, new Analytics([""]));
     
-    // load Google Analytics
-    window._gaq = window._gaq || [];
-    scripts.load(
-        (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
-        ".google-analytics.com/ga.js"
-    );
+    // make the analytics plugin delegate to the methods
+    // of the promise to load the script
+    lang.delegate(analytics, scriptPromise);
+    
+    // TEMP!
+    window.scriptPromise = scriptPromise;
     
     // export the anlytics plugin
     $pt.analytics = analytics;
