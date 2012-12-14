@@ -632,4 +632,4 @@ to the methods of the promise returned from the call to `$pt.scripts.load(...)` 
 information, see jQuery's documentation on
 <a target="_blank" href="http://api.jquery.com/category/deferred-object/">Deferred objects</a> and how
 they are used with calls to 
-<a target="_blank" href="http://api.jquery.com/jQuery.ajax/">`$.ajax()`</a>.
+<code><a target="_blank" href="http://api.jquery.com/jQuery.ajax/">$.ajax()</a></code>
