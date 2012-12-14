@@ -49,6 +49,7 @@ As you might expect,
 [jquery.platinum.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js)
 contains the full build of all the utilities and plugins.
 
+*******************
 
 
 [jquery.platinum-array-base.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-array-base.js)
@@ -83,8 +84,39 @@ Argument    | Description
 
 A new JavaScript Array with sliced and stepped values from the original `values` argument.
 
+#### Example
 
-***
+```javascript
+// create an array to use for experiments
+var values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// create a new array with only the first item
+console.log($pt.array(values, 0, 1));
+// output: [1]
+
+// create a new array from all of the values at even indexes
+console.log($pt.array(values, 0, null, 2));
+// output: [1, 3, 5, 7, 9]
+
+// create a new array from all the values at odd indexes
+console.log($pt.array(values, 1, null, 2));
+// output: [2, 4, 6, 8, 10]
+
+// create a new array of the last 4 values
+console.log($pt.array(values, -4));
+// output: [7, 8, 9, 10]
+
+// create a new reversed array
+console.log($pt.array(values, null, null, -1));
+// output: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+// create a new reversed array starting from the last index
+// and ending at the 9th-to-last index, jumping 3 indexes at a time
+console.log($pt.array(values, -1, -9, -3));
+// output: [10, 7, 4]
+```
+
+*******************
 
 ### `$pt.array.each(values, fn, [start, end, stop])`
 
