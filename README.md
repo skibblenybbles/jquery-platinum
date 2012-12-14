@@ -211,7 +211,7 @@ Parameter   | Description
 ------------|------------
 `that`      | an object to which the resulting function's `this` value will be bound and to which `args` will be curried.
 `fn`        | the function to bind to the `that` object.
-`args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
+`args ...`  | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
 
 #### Returns
 
@@ -308,7 +308,7 @@ Creates a new function binding the given function `fn` to null with optionally c
 Parameter   | Description
 ------------|------------
 `fn`        | the function to which `args` will be curried.
-`args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
+`args ...`  | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
 
 #### Returns
 
@@ -333,7 +333,7 @@ $("a").click($p.lang.partial(function(message, evt) {
 ### `$pt.lang.delegate(target, source)`
 
 For each method in `source` that does not exist in `target`, adds a new method to `target` that
-calls the `target`'s method. In other words, this function makes `target` implement all of `source`'s
+calls the `source`'s method. In other words, this function makes `target` implement all of `source`'s
 methods. The exception is that `target`'s `constructor` method will not be overwritten.
 
 #### Parameters
@@ -374,6 +374,10 @@ person.displayPet();
 $pt.lang.delegate(person, monkey);
 person.displayPet();
 // output: Curious George
+
+// note that person does not have monkey's properties:
+person.first
+// output: undefined
 ```
 
 
@@ -510,4 +514,104 @@ _gaq.push(['siteTracker._setCustomVar', 1, "User State", "Authenticated", 2]);
 _gaq.push(['rollupTracker._trackPageview']);
 _gaq.push(['siteTracker._trackPageview']);
 ```
+
+GA allows you to pass callback functions to `_gaq.push(...)` that are called after the ga.js
+script has loaded asynchronously. The callbacks can then call methods on the global `_gat` variable
+to do things like get a named tracker, find out a tracker's version, get a linker URL, etc.
+`$pt.analytics` wraps each of the GA's `_get*` methods in a more convenient way:
+
+```javascript
+// set an account for the default tracker, or the $pt.analytics method will be ignored
+$pt.analytics.setAccount("UA-XXXXXXXX-1");
+
+// with vanilla ga.js, to log the default tracker's version, you would write:
+_gaq.push(function() {
+    var tracker = _gat.getTrackerByName();
+    console.log(tracker._getVersion());
+});
+// output: 5.3.8
+
+// with $pt.analytics, you would write:
+$pt.analytics.getVersion(function(version) {
+    console.log(version);
+});
+// output: 5.3.8
+```
+
+You can see that `$pt.analytics` takes care of getting the tracker you requested and calling
+its `_get*` method automatically, passing the result of the `_get*` method to your callback.
+
+You can use the multiple tracker syntax with these types of methods, but this use case probably
+doesn't have a lot of practical application:
+
+```javascript
+$pt.analytics("rollupTracker").setAccount("UA-XXXXXXXX-1");
+$pt.analytics("siteTracker").setAccount("UA-XXXXXXXX-2");
+
+$pt.analytics("*").getVersion(function(version) {
+    console.log(version);
+});
+// output:
+// 5.3.8
+// 5.3.8
+```
+
+`$pt.analytics` implements all of the current, non-deprecated methods provided by `_gaq.push(...)`
+with the `_` removed from the start of the method name. For a reference on how to use these methods, 
+please refer to the
+<a target="_blank" href="https://developers.google.com/analytics/devguides/collection/gajs/methods/">Google Analytics Documentation</a>.
+
+### `$pt.analytics`
+
+An object that delegates its methods to an opaque object that wraps the GA methods for the default
+tracker named `""`.
+
+### `$pt.analytics([trackerName ... | trackerNameArray | "*"])`
+
+This function returns an opaque object that wraps the GA methods bound to the tracker(s) specified by
+the names in `trackerName ...`, `trackerNamesArray` or all trackers if `"*"` is passed. If no arguments
+are passed, the returned opaque object will be bound to the default tracker named `""`.
+
+The function also allows you to mix a variable number of string and array arguments, but this
+usage is somewhat obscure. Mixing `"*"` with other arguments will produce undefined results.
+
+Finally, each tracker name should be a valid string name for a tracker as specified by Google Analytics.
+Generally, using names that are valid JavaScript variable identifiers should work, i.e. letters,
+underscores and digits after the first character. Usage of special characters for identifiers allowed
+by JavaScript like `"$"` may work, but you should consult GA's documentation or try it with an experiment
+first.
+
+#### Parameters
+
+Parameter           | Description
+--------------------|------------
+`trackerName ...`   | a variable number of string names for trackers.
+`trackerNameArray`  | an array of string names for trackers.
+`"*"`               | a special argument that specifies all trackers that have been initialized with `$pt.analytics.setAccount(...)`.
+
+#### Returns
+
+An opaque object that wraps the GA methods bound to the specified tracker(s). See the examples in the
+discussion above for sample usage.
+
+
+### `$pt.analytics.setAccount(account)`
+### `$pt.analytics(...).setAccount(account)`
+
+While these are simply methods implemented by the opaque GA wrapper object, they are important, because
+they must be called before other `$pt.analytics*` methods will work. Calling `setAccount(...)` makes
+`$pt.analytics` "aware" of a tracker name, and until it is called, any tracker methods that you call
+through `$pt.analytics*` will be ignored.
+
+#### Parameters
+
+Parameter   | Description
+------------|------------
+`account`   | your Google Analytics account name string which will be bound to the trackers selected by `$pt.analytics` or `$pt.analytics(...)`.
+
+#### Returns
+
+An opaque object that wraps the GA methods bound to tracker(s) specified by `$pt.analytics` or `$pt.analytics(...)`.
+After calling `setAccount(...)`, the other methods on the opaque wrapper object will work as expected.
+See the examples in the discussion above for sample usage.
 
