@@ -69,6 +69,12 @@ by Python's list implementation.
 
 #### Arguments:
 
+`values`    | a JavaScript Array or array-like object.
+------------|-----------------------------------------
+`start`     | (optional) the index into the array where the iteration will start. It may be negative to index
+            | from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
+            | for the sign of the `step` argument.
+
 *   `values` a JavaScript Array or array-like object.
 *   `start` (optional) the index into the array where the iteration will start. It may be negative to index
     from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
@@ -101,5 +107,5 @@ Optionally slices and steps through the input array in the same way as `$pt.arra
 
 #### Returns:
 
-`undefined` (no return)
+`undefined` (no return value)
 
