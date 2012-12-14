@@ -57,8 +57,8 @@ contains the full build of all the utilities and plugins.
 
 This script provides array slicing, stepping and iterating utilities. It is similar to some of the functionality
 provided by native JavaScript and jQuery, but ultimately it is more expressive. The functions operate on JavaScript
-Arrays or array-like objects that have a `.length` attribute zero-based indexing, e.g. the `arguments` object
-that is available in a function body can be manipulated with these functions.
+Arrays or array-like objects that have a `.length` attribute and zero-based indexing. An example is the `arguments`
+object that is available inside a function. `arugments` objects can be manipulated with these functions.
 
 ### `$pt.array(values, [start, end, step])`
 
@@ -162,7 +162,9 @@ $pt.array.each(values, function(value) { console.log(value); }, -1, -4, -1);
 [jquery.platinum-lang.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-lang.js)
 -------------------------
 
-Includes jquery.platinum-array-base.js. This script provides language helper utilities for binding
+*Includes jquery.platinum-array-base.js.*
+
+This script provides language helper utilities for binding
 functions to objects and currying arguments to functions. Combined judiciously with `$pt.array` utilities,
 the `$pt.lang` utilities can improve your code's readability and help you avoid common bugs introduced
 by JavaScript's built-in `for (;;)` syntax.
@@ -233,7 +235,7 @@ thief.log = $pt.lang.hitch(thief, owner.log);
 thief.log();
 // output: I like to steal methods.
 
-// work with $pt.array.each() to console.log() each item in an array
+// work with $pt.array.each() to log each item in an array
 $pt.array.each([2, 4, 6, 8, 10], $pt.lang.hitch(console, console.log));
 // output:
 // 2
@@ -242,7 +244,7 @@ $pt.array.each([2, 4, 6, 8, 10], $pt.lang.hitch(console, console.log));
 // 8
 // 10
 
-// how about that currying thing? here's a contrived example:
+// what about currying? here's a contrived example:
 var person = {
     first: "Bob",
     last: "Hope",
