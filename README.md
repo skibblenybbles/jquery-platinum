@@ -33,7 +33,7 @@ The script adds a `$pt` global variable which you can use to conveniently access
 jQuery Platinum. The utilities are also available on the jQuery object at `jQuery.platinum` or `$.platinum`.
 
 If you don't like the global `$pt` variable, you can remove it by calling `$pt.noConflict()`, which works
-just like jQuery's <a target="_blank" href="http://api.jquery.com/jQuery.noConflict/"><code>noConflict()</code></a>.
+just like jQuery's <code><a target="_blank" href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
 
 For more advanced usage, you can download a specific plugin, such as
 <a target="_blank" href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js">jquery.platinum-analytics.js</a>.
