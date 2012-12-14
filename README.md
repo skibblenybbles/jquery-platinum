@@ -17,6 +17,7 @@ This is a work-in-progress. Currently, the project provides:
 * A powerful API wrapping Google Analytics' asynchronous library
 * A simple build system that automatically creates full and minified versions of each .js file in the src directory
 
+
 Overview
 --------
 
@@ -48,6 +49,8 @@ As you might expect,
 [jquery.platinum.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js)
 contains the full build of all the utilities and plugins.
 
+
+
 [jquery.platinum-array-base.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-array-base.js)
 ----------------------------------------------------------------------------------------------------------------------------
 
@@ -69,6 +72,7 @@ by Python's list implementation.
 
 #### Arguments
 
+Argument    | Description
 ------------|------------
 `values`    | a JavaScript Array or array-like object.
 `start`     | (optional) the index into the array where the iteration will start. It may be negative to index from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate for the sign of the `step` argument.
@@ -80,24 +84,22 @@ by Python's list implementation.
 A new JavaScript Array with sliced and stepped values from the original `values` argument.
 
 
-
 ### `$pt.array.each(values, fn, [start, end, stop])`
 
 Takes a JavaScript Array or array-like object and runs the given function `fn` for each value in the array.
 Optionally slices and steps through the input array in the same way as `$pt.array()`.
 
-#### Arguments:
+#### Arguments
 
 Argument    | Description
 ------------|------------
-*   `values` a JavaScript Array or array-like object.
-*   `fn` a function that accepts a single argument that will be called for each object processed in the `values` array.
-*   `start` (optional) see `$pt.array()`.
-*   `end` (optional) see `$pt.array()`.
-*   `step` (optional) see `$pt.array()`.
+`values`    | a JavaScript Array or array-like object.
+`fn`        | a function that accepts a single argument that will be called for each object processed in the `values` array.
+`start`     | (optional) see `$pt.array()`.
+`end`       | (optional) see `$pt.array()`.
+`step`      | (optional) see `$pt.array()`.
 
-
-#### Returns:
+#### Returns
 
 `undefined` (no return value)
 
