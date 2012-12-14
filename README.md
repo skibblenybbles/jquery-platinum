@@ -53,20 +53,19 @@ contains the full build of all the utilities and plugins.
 
 
 [jquery.platinum-array-base.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-array-base.js)
-----------------------------------------------------------------------------------------------------------------------------
+-------------------------------
 
-This script contains array slicing, stepping and iterating utilities. It is similar to some of the functionality
+This script provides array slicing, stepping and iterating utilities. It is similar to some of the functionality
 provided by native JavaScript and jQuery, but ultimately it is more expressive. The functions operate on JavaScript
 Arrays or array-like objects that have a `.length` attribute zero-based indexing, e.g. the `arguments` object
 that is available in a function body can be manipulated with these functions.
 
 ### `$pt.array(values, [start, end, step])`
 
-Takes a JavaScript Array or array-like object and returns a new JavaScript Array. Optionally
-slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
-parameter controls the increment of the index counter during iteration. Negative `start` and `end`
-indexes are also supported. For example a `start` index of `-2` means to start at the second
-from the last index in the array.
+Takes an Array or array-like object and returns a new Array. Optionally slices the array beginning
+at the `start` index and ending at the `end - 1` index. The `step` parameter controls the increment
+of the index counter during iteration. Negative `start` and `end` indexes are also supported. For
+example a `start` index of `-2` means to start at the second from the last index in the array.
 
 The effect is to create an expressive array utility that mimics the slicing and stepping provided
 by Python's list implementation.
@@ -75,16 +74,16 @@ by Python's list implementation.
 
 Argument    | Description
 ------------|------------
-`values`    | a JavaScript Array or array-like object.
+`values`    | an Array or array-like object.
 `start`     | (optional) the index into the array where the iteration will start. It may be negative to index from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate for the sign of the `step` argument.
 `end`       | (optional) the index into the array where the iteration will stop (non-inclusive). It may be negative to index from the end of the array. If set to `null` or `undefined`, the value is set to the "end" of the array appropriate for the sign of the `step` argument.
 `step`      | (optional) The amount by which to increment the array index counter during iteration. Use positive values to iterate forward and negative values to iterate in reverse. A value of `0` will be changed to `1` to avoid infinite iteration.
 
 #### Returns
 
-A new JavaScript Array with sliced and stepped values from the original `values` argument.
+A new Array with sliced and stepped values from the original `values` argument.
 
-#### Example
+#### Examples
 
 ```javascript
 var values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -135,7 +134,7 @@ Argument    | Description
 
 `undefined` (no return value)
 
-#### Example
+#### Examples
 
 ```javascript
 var values = ["hello", "there", "how", "are", "you", "i", "am", "fine"];
@@ -157,3 +156,113 @@ $pt.array.each(values, function(value) { console.log(value); }, -1, -4, -1);
 // i
 ```
 
+*******************
+
+
+[jquery.platinum-lang.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-lang.js)
+-------------------------
+
+Includes jquery.platinum-array-base.js. This script provides language helper utilities for binding
+functions to objects and currying arguments to functions. Combined judiciously with `$pt.array` utilities,
+the `$pt.lang` utilities can improve your code's readability and help you avoid common bugs introduced
+by JavaScript's built-in `for (;;)` syntax.
+
+
+### `$pt.lang.hitch(that, fn, [args ...])`
+
+Creates a new function binding the given function `fn` to the object `that`. When the resulting function
+is called, its `this` value will be the `that` object. Optionally curries any number of extra
+arguments to the new function as well.
+
+#### Arguments
+
+Argument    | Description
+------------|------------
+`that`      | an object to which the resulting function's `this` values will be bound.
+`fn`        | the function to bind to the `that` object.
+`args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
+
+#### Returns
+
+A new function that calls `fn` with its `this` value bound to `that` and curried arguments `args`.
+
+#### Examples
+
+```javascript
+// create an object with a property and a method to log the property
+var owner = {
+    prop: "This is my property.",
+    log: function() {
+        console.log(this.prop);
+    }
+};
+
+// call it
+owner.log();
+// output: This is my property.
+
+// now store owner's log() as a global
+var log = owner.log;
+
+// call it
+log();
+// output: undefined
+// (this is because the global log() is bound to window, not owner)
+
+// prove it
+window.prop = "And I am the window";
+log();
+// output: And I am the window
+
+// overwrite log(), by setting it to the function created by hitching owner's log() to owner
+log = $p.lang.hitch(owner, owner.log);
+
+// call it
+log();
+// output: This is my property.
+
+// create a thief with its own property
+var thief = {
+    prop: "I like to steal methods."
+};
+
+// bind owner's log() to thief
+thief.log = $p.lang.hitch(thief, owner.log);
+
+// call it
+thief.log();
+// output: I like to steal methods.
+
+// work with $p.array.each() to console.log() each item in an array
+$p.array.each([2, 4, 6, 8, 10], lang.hitch(console, console.log));
+// output:
+// 2
+// 4
+// 6
+// 8
+// 10
+
+// how about that currying thing? here's a contrived example:
+var person = {
+    first: "Bob",
+    last: "Hope",
+    log: function(lastName, firstName) {
+        console.log(firstName + " " + lastName);
+    },
+    display: function() {
+        this.log(this.last, this.first);
+    }
+};
+person.display();
+// output: Bob Hope
+
+// let's overwrite the log() method with the curried lastName of "The Builder"
+person.log = lang.hitch(person, person.log, "The Builder");
+person.display();
+// output: Bob The Builder
+
+// play a little more
+person.first = "Pharaoh";
+person.display();
+// output: Pharaoh The Builder
+```
