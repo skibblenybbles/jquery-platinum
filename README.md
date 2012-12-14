@@ -56,9 +56,9 @@ contains the full build of all the utilities and plugins.
 -------------------------------
 
 This script provides array slicing, stepping and iterating utilities. It is similar to some of the functionality
-provided by native JavaScript and jQuery, but ultimately it is more expressive. The functions operate on JavaScript
-Arrays or array-like objects that have a `.length` attribute and zero-based indexing. An example is the `arguments`
-object that is available inside a function. `arugments` objects can be manipulated with these functions.
+provided by native JavaScript and jQuery, but it is more expressive. The functions operate on JavaScript
+Arrays or array-like objects that have a `.length` attribute and zero-based indexing. For examplethe `arguments`
+object that is available inside of a function can be passed to these utilities to create normal Array objects.
 
 ### `$pt.array(values, [start, end, step])`
 
@@ -70,9 +70,9 @@ example a `start` index of `-2` means to start at the second from the last index
 The effect is to create an expressive array utility that mimics the slicing and stepping provided
 by Python's list implementation.
 
-#### Arguments
+#### Parameters
 
-Argument    | Description
+Parameter   | Description
 ------------|------------
 `values`    | an Array or array-like object.
 `start`     | (optional) the index into the array where the iteration will start. It may be negative to index from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate for the sign of the `step` argument.
@@ -120,9 +120,9 @@ console.log($pt.array(values, -1, -9, -3));
 Takes a JavaScript Array or array-like object and runs the given function `fn` for each value in the array.
 Optionally slices and steps through the input array in the same way as `$pt.array()`.
 
-#### Arguments
+#### Parameters
 
-Argument    | Description
+Parameter   | Description
 ------------|------------
 `values`    | a JavaScript Array or array-like object.
 `fn`        | a function that accepts a single argument that will be called for each object processed in the `values` array.
@@ -176,9 +176,9 @@ Creates a new function binding the given function `fn` to the object `that`. Whe
 is called, its `this` value will be the `that` object. Optionally curries any number of extra
 arguments to the new function as well.
 
-#### Arguments
+#### Parameters
 
-Argument    | Description
+Parameter   | Description
 ------------|------------
 `that`      | an object to which the resulting function's `this` value will be bound and to which `args` will be curried.
 `fn`        | the function to bind to the `that` object.
@@ -274,9 +274,9 @@ person.display();
 
 Creates a new function binding the given function `fn` to null with optionally curried arguments.
 
-#### Arguments
+#### Parameters
 
-Argument    | Description
+Parameter   | Description
 ------------|------------
 `fn`        | the function to which `args` will be curried.
 `args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
@@ -288,11 +288,14 @@ A new function that calls `fn` with its `this` value bound to `null` and curried
 #### Examples
 
 ```javascript
-// add a click handler to all <a> tags on the page that alerts a curried message
+// add a click handler to all <a> tags on the page that logs a curried message
 $("a").click($p.lang.partial(function(message, evt) {
-    alert(message);
+    console.log(message);
     // notice how evt got passed as the second argument instead
-    // of the first, as it normally would
+    // of the usual first argument
     evt.preventDefault();
-}, "This is an alert!"));
+}, "It works!"));
+
+// upon click of a link tag:
+// ouput: It works!
 ```
