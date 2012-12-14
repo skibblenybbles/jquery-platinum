@@ -266,3 +266,31 @@ person.last = "Pharaoh";
 person.display();
 // output: The Builder Pharaoh
 ```
+
+
+### `$pt.lang.partial(fn, [args ...])`
+
+Creates a new function binding the given function `fn` to null with optionally curried arguments.
+
+#### Arguments
+
+Argument    | Description
+------------|------------
+`fn`        | the function to which arguments will be curried.
+`args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
+
+#### Returns
+
+A new function that calls `fn` with its `this` value bound to `null` and curried arguments `args`.
+
+#### Examples
+
+```javascript
+// add a click handler to all <a> tags on the page that alerts a curried message
+$("a").click($p.lang.partial(function(message, evt) {
+    alert(message);
+    // notice how evt got passed as the second argument instead
+    // of the first, as it normally would
+    evt.preventDefault();
+}, "This is an alert!"));
+```
