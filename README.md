@@ -14,7 +14,7 @@ This is a work-in-progress. Currently, the project provides:
 * Language utilities for managing function binding and argument currying
 * Array utilities for functional-style iteration and functions for map, reduce, filter, etc.
 * Basic asynchronous script-loading utilities using a light wrapper around `$.ajax()`
-* A powerful API wrapping Google Analytics' asynchronous library
+* A convenient API wrapping Google Analytics' asynchronous library
 * A simple build system that automatically creates full and minified versions of each .js file in the src directory
 
 
@@ -330,22 +330,69 @@ $("a").click($p.lang.partial(function(message, evt) {
 ```
 
 
+### `$pt.lang.delegate(target, source)`
+
+For each method in `source` that does not exist in `target`, adds a new method to `target` that
+calls the `target`'s method. In other words, this function makes `target` implement all of `source`'s
+methods. The exception is that `target`'s `constructor` method will not be overwritten.
+
+#### Parameters
+
+Parameter   | Description
+------------|------------
+`target`    | the target object that will have all of `source`'s methods added to it.
+`source`    | the source object to which `target` will delegate methods.
+
+#### Returns
+
+`undefined` (no return value).
+
+#### Examples
+
+```javascript
+// here's our source object
+var monkey = {
+    first: "Curious",
+    last: "George",
+    display: function() {
+        console.log(this.first + " " + this.last);
+    }
+};
+
+// here's our target object
+var person = {
+    displayPet: function() {
+        this.display();
+    }
+};
+
+// try it
+person.displayPet();
+// output: TypeError: Object #<Object> has no method 'display'
+
+// delegate monkey's methods to person to make this work
+$pt.lang.delegate(person, monkey);
+person.displayPet();
+// output: Curious George
+```
+
+
 [jquery.platinum-analytics.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-analytics.js)
 ------------------------------
 
 *Includes jquery.platinum-array-base.js, jquery.platinum-lang.js and jquery.platinum-scripts.js*
 
-This script wraps the Google Analytics (GA) asynchronous library with a powerful and convenient API. It makes the
-most common case of loading GA and tracking a pageview very simple, but it also enables you to manage complex
-analytics requirements on sites with multiple GA trackers.
+This script wraps the Google Analytics (GA) asynchronous library with a convenient API. It makes the most common 
+case of loading GA and tracking a pageview very simple, but it also enables you to manage complex analytics
+requirements on sites with multiple GA trackers.
 
 By including this script on your page, the Google Analytics ga.js script will be automatically loaded 
-using `$pt.scripts.load()`, so you do not (*and should not*) need to put the usual GA `<script>` tags
+using `$pt.scripts.load()`, so you do not need to *(and should not)* put the usual GA `<script>` tags
 in your HTML to load Google Analytics. However, you must call the `setAccount()` method on the
-`$pt.analytics` object to configure your GA account before calling its other methods (see more details below).
+`$pt.analytics` object to configure your GA account before calling its other methods (more details below).
 Until you call `setAccount()`, any calls to `$pt.analytics` methods will be silently ignored.
 
-The methods provided by `$pt.analytics` each return an opaque object that wrap the GA `_gaq.push(...)` methods.
+The methods provided by `$pt.analytics` each return an opaque object that wraps the GA `_gaq.push(...)` methods.
 Rather than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write the more natural
 syntax `$pt.analytics.trackPageview('/some-url/')` instead.
 
@@ -393,8 +440,8 @@ return this tracker object.
 
 The previous example on using multiple trackers with `$pt.analytics(...)` has a nicer syntax than
 `_gaq.push(...)`, but it doesn't save you very much typing. The good news is that `$pt.analytics(...)`
-also allows you to pass it multiple tracker names, so you can send the same commands to more than
-one tracker at the same time:
+also allows you to specify multiple tracker names, so you can send the same commands to multiple
+trackers in one call, even with chaining:
 
 ```javascript
 // set up the trackers
