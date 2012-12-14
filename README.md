@@ -178,7 +178,7 @@ arguments to the new function as well.
 
 Argument    | Description
 ------------|------------
-`that`      | an object to which the resulting function's `this` values will be bound.
+`that`      | an object to which the resulting function's `this` value will be bound and to which `args` will be curried.
 `fn`        | the function to bind to the `that` object.
 `args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
 
@@ -276,7 +276,7 @@ Creates a new function binding the given function `fn` to null with optionally c
 
 Argument    | Description
 ------------|------------
-`fn`        | the function to which arguments will be curried.
+`fn`        | the function to which `args` will be curried.
 `args`      | (optional) N additional arguments that will be curried as the first N arguments passed to the function `fn`.
 
 #### Returns
