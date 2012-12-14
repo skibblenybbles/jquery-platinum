@@ -273,7 +273,7 @@ $pt.array.each([2, 4, 6, 8, 10], $pt.lang.hitch(console, console.log));
 // 8
 // 10
 
-// what about currying? here's a contrived example:
+// what about currying? here's a contrived example to show how it works:
 var person = {
     first: "Bob",
     last: "Hope",
@@ -287,15 +287,15 @@ var person = {
 person.display();
 // output: Bob Hope
 
-// let's overwrite the log() method with the curried lastName of "The Builder"
-person.log = $pt.lang.hitch(person, person.log, "The Builder");
+// let's overwrite the log() method, currying the lastName parameter as "A New"
+person.log = $pt.lang.hitch(person, person.log, "A New");
 person.display();
-// output: The Builder Hope
+// output: A New Hope
 
 // play a little more
-person.last = "Pharaoh";
+person.last = "Born Child";
 person.display();
-// output: The Builder Pharaoh
+// output: A New Born Child
 ```
 
 
@@ -339,8 +339,14 @@ This script wraps the Google Analytics (GA) asynchronous library with a powerful
 most common case of loading GA and tracking a pageview very simple, but it also enables you to manage complex
 analytics requirements on sites with multiple GA trackers.
 
-The functions provided by this script each return an opaque object that implements the GA methods. Rather
-than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write the more natural
+By including this script on your page, the Google Analytics ga.js script will be automatically loaded 
+using `$pt.scripts.load()`, so you do not (*and should not*) need to put the usual GA `<script>` tags
+in your HTML to load Google Analytics. However, you must call the `setAccount()` method on the
+`$pt.analytics` object to configure your GA account before calling its other methods (see more details below).
+Until you call `setAccount()`, any calls to `$pt.analytics` methods will be silently ignored.
+
+The methods provided by `$pt.analytics` each return an opaque object that wrap the GA `_gaq.push(...)` methods.
+Rather than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write the more natural
 syntax `$pt.analytics.trackPageview('/some-url/')` instead.
 
 Each function in `$pt.analytics` returns the opaque analytics object, so you can chain GA methods
