@@ -49,8 +49,6 @@ As you might expect,
 [jquery.platinum.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js)
 contains the full build of all the utilities and plugins.
 
-*******************
-
 
 [jquery.platinum-array-base.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-array-base.js)
 -------------------------------
@@ -156,7 +154,41 @@ $pt.array.each(values, function(value) { console.log(value); }, -1, -4, -1);
 // i
 ```
 
-*******************
+
+[jquery.platinum-scripts.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-scripts.js)
+----------------------------
+
+*Includes jquery.platinum-array-base.js.*
+
+This script provides utilities for loading scripts asynchronously.
+
+### `$pt.scripts.load(url, options)`
+
+Loads a JavaScript file with the given `url` and executes it. This is a lightweight wrapper around
+`$.ajax()` with hard-coded values `dataType === true` and `cache === true`. According to jQuery's documentation,
+the provided `$.getScript()` sets `cache` to `false`, so this is probably a better choice for loading
+scripts asynchronously in most cases. It returns the resulting promise from calling `$.ajax()`, so you
+can hook a load callback by calling the return value's `done()` method.
+
+#### Parameters
+
+Parameter   | Description
+------------|------------
+`url`       | The URL of the script to load.
+`options`   | (optional) additional options to pass to the `$.ajax()` call.
+
+#### Returns
+
+A promise to load the requested script
+
+#### Example
+
+```javascript
+// load jQuery UI and log a message once it has loaded
+$pt.scripts.load("//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js").done(function() {
+    console.log("jQuery UI has loaded!");
+});
+```
 
 
 [jquery.platinum-lang.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-lang.js)
@@ -299,3 +331,5 @@ $("a").click($p.lang.partial(function(message, evt) {
 // upon click of a link tag:
 // ouput: It works!
 ```
+
+
