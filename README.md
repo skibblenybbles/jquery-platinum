@@ -215,7 +215,7 @@ log();
 // output: And I am the window
 
 // overwrite log(), by setting it to the function created by hitching owner's log() to owner
-log = $p.lang.hitch(owner, owner.log);
+log = $pt.lang.hitch(owner, owner.log);
 
 // call it
 log();
@@ -227,14 +227,14 @@ var thief = {
 };
 
 // bind owner's log() to thief
-thief.log = $p.lang.hitch(thief, owner.log);
+thief.log = $pt.lang.hitch(thief, owner.log);
 
 // call it
 thief.log();
 // output: I like to steal methods.
 
-// work with $p.array.each() to console.log() each item in an array
-$p.array.each([2, 4, 6, 8, 10], lang.hitch(console, console.log));
+// work with $pt.array.each() to console.log() each item in an array
+$pt.array.each([2, 4, 6, 8, 10], $pt.lang.hitch(console, console.log));
 // output:
 // 2
 // 4
@@ -257,12 +257,12 @@ person.display();
 // output: Bob Hope
 
 // let's overwrite the log() method with the curried lastName of "The Builder"
-person.log = lang.hitch(person, person.log, "The Builder");
+person.log = $pt.lang.hitch(person, person.log, "The Builder");
 person.display();
-// output: Bob The Builder
+// output: The Builder Hope
 
 // play a little more
-person.first = "Pharaoh";
+person.last = "Pharaoh";
 person.display();
-// output: Pharaoh The Builder
+// output: The Builder Pharaoh
 ```

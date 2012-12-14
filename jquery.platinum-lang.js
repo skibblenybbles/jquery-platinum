@@ -72,7 +72,7 @@ window.$pt.noConflict = noConflict;
             
             // iterate
             for (i = start; i < end; i += step) {
-                value = fn.call(null, iterable[i], i);
+                value = fn.call(null, iterable[i]);
                 if (value === false) {
                     return;
                 }
@@ -86,7 +86,7 @@ window.$pt.noConflict = noConflict;
             
             // iterate
             for (i = start; i > end; i += step) {
-                value = fn.call(null, iterable[i], i);
+                value = fn.call(null, iterable[i]);
                 if (value === false) {
                     return;
                 }
