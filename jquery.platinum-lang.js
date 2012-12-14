@@ -113,14 +113,18 @@ window.$pt.noConflict = noConflict;
     lang.hitch = function(that, fn) {
         return (function(that, fn, args) {
             return function() {
-                return fn.apply(that, args.concat(arguments));
+                return fn.apply(that, args.concat(array(arguments)));
             };
         })(that, fn, array(arguments, 2));
     };
 
     // create an unbound function with curried arguments
     lang.partial = function(fn) {
-        return lang.hitch(null, fn, array(arguments, 1));
+        return (function(fn, args) {
+            return function() {
+                return fn.apply(null, args.concat(array(arguments)));
+            };
+        })(fn, array(arguments, 1));
     };
     
     // export the lang plugin

@@ -1,153 +1,256 @@
-// requires: array-base.js scripts.js, lang.js
+// requires: array-base.js, lang.js, scripts.js
 
 (function($, $pt, window, document) {
     
     var 
         // the required plugins
-        scripts = $pt.scripts,
+        array = $pt.array,
         lang = $pt.lang,
+        scripts = $pt.scripts,
         
-        // all of the non-deprecated Google Analytics pageTracker methods,
-        // (as of 12/11/2012)
-        methods = {
-            "addIgnoredOrganic": "_addIgnoredOrganic",
-            "addIgnoredRef": "_addIgnoredRef",
-            "addItem": "_addItem",
-            "addOrganic": "_addOrganic",
-            "addTrans": "_addTrans",
-            "clearIgnoredOrganic": "_clearIgnoredOrganic",
-            "clearIgnoredRef": "_clearIgnoredRef",
-            "clearOrganic": "_clearOrganic",
-            "cookiePathCopy": "_cookiePathCopy",
-            "deleteCustomVar": "_deleteCustomVar",
-            "getName": "_getName",
-            "setAccount": "_setAccount",
-            "getAccount": "_getAccount",
-            "getClientInfo": "_getClientInfo",
-            "getDetectFlash": "_getDetectFlash",
-            "getDetectTitle": "_getDetectTitle",
-            "getLinkerUrl": "_getLinkerUrl",
-            "getLocalGifPath": "_getLocalGifPath",
-            "getServiceMode": "_getServiceMode",
-            "getVersion": "_getVersion",
-            "getVisitorCustomVar": "_getVisitorCustomVar",
-            "link": "_link",
-            "linkByPost": "_linkByPost",
-            "setAllowAnchor": "_setAllowAnchor",
-            "setAllowLinker": "_setAllowLinker",
-            "setCampContentKey": "_setCampContentKey",
-            "setCampMediumKey": "_setCampMediumKey",
-            "setCampNameKey": "_setCampNameKey",
-            "setCampNOKey": "_setCampNOKey",
-            "setCampSourceKey": "_setCampSourceKey",
-            "setCampTermKey": "_setCampTermKey",
-            "setCampaignCookieTimeout": "_setCampaignCookieTimeout",
-            "setCampaignTrack": "_setCampaignTrack",
-            "setClientInfo": "_setClientInfo",
-            "setCookiePath": "_setCookiePath",
-            "setCustomVar": "_setCustomVar",
-            "setDetectFlash": "_setDetectFlash",
-            "setDetectTitle": "_setDetectTitle",
-            "setDomainName": "_setDomainName",
-            "setLocalGifPath": "_setLocalGifPath",
-            "setLocalRemoteServerMode": "_setLocalRemoteServerMode",
-            "setLocalServerMode": "_setLocalServerMode",
-            "setReferrerOverride": "_setReferrerOverride",
-            "setRemoteServerMode": "_setRemoteServerMode",
-            "setSampleRate": "_setSampleRate",
-            "setSiteSpeedSampleRate": "_setSiteSpeedSampleRate",
-            "setSessionCookieTimeout": "_setSessionCookieTimeout",
-            "setVisitorCookieTimeout": "_setVisitorCookieTimeout",
-            "trackEvent": "_trackEvent",
-            "trackPageview": "_trackPageview",
-            "trackSocial": "_trackSocial",
-            "trackTiming": "_trackTiming",
-            "trackTrans": "_trackTrans"
-        },
+        // all known trackers as an Array for easy iteration
+        allTrackers = [],
         
-        // a function to create a method wrapper for each pageTracker method
-        wrapMethod = function(name) {
+        // all known trackers as a set, storing a boolean indicating
+        // whether "setAccount" has been called for the tracker yet
+        // (commands sent to a tracker will be ignored until "setAccount"
+        // is called)
+        allTrackersSet = { },
+        
+        // the Analytics constructor
+        Analytics = function(trackers) {
             
-            // is this a _get* method?
-            if (name.substring(0, 4) === "_get") {
-                
-                // create a function that calls the given callback with
-                // the value returned by the async GA _get* method
-                return lang.partial(function(method) {
-                    
-                    return function() {
-                        
-                        var callback = arguments[0];
-                        // the first parameter must be a function
-                        if (typeof callback !== "function") {
-                            return;
-                        }
-                        
-                        // create the callback that will run the given callback
-                        window._gaq.push(lang.partial(function(method, callback, args) {
-                            
-                            return function() {
-                                // get the default tracker
-                                var tracker = window._gat._getTrackerByName();
-
-                                // run the callback with the tracker method's result
-                                callback(tracker[method].apply(tracker, args));
-                            };
-                        
-                        }, method, callback, array(arguments, 1)));
-                    };
-                }, methods[name]);
-                
-            } else {
-                
-                // create a function that pushes the command into the global queue
-                return lang.partial(function(method) {
-                    
-                    return function() {
-                        
-                        window._gaq.push([method].concat(arguments));
-                    };
-                    
-                }, methods[name]);
+            // update all known trackers, but skip
+            // if we were just passed all trackers
+            if (trackers !== allTrackers) {                
+                array.each(trackers, function(tracker) {
+                    if (!allTrackersSet.hasOwnProperty(tracker)) {
+                        allTrackers.push(tracker);
+                        allTrackersSet[tracker] = false;
+                    }
+                });
             }
+            
+            this.trackers = trackers;
         },
-        
-        // load GA only once
-        once = false,
         
         // the analytics plugin
-        analytics = function(account, track) {
-            var method;
-        
-            if (once) {
-                return;
-            }
-            once = true;
-        
-            // populate with all of the GA method wrappers
-            for (method in methods) {
-                analytics[method] = wrapMethod(method);
+        analytics = function() {
+            // determine the requested trackers
+            var trackers = [],
+                trackersSet = { };
+            
+            // determine the requested trackers based on the passed arguments
+            if (arguments.length === 0) {
+                
+                // for no arguments, just use this
+                return this;
+                
+            } else if (arguments.length === 1 && arguments[0] === "*") {
+                
+                // use all trackers
+                trackers = allTrackers;
+            
+            } else {
+                
+                // each passed argument may be a string or Array
+                array.each(arguments, function(arg) {
+                    
+                    if (typeof arg === "string") {
+                        
+                        if (!trackersSet.hasOwnProperty(arg)) {
+                            trackers.push(arg);
+                            trackersSet[arg] = true;
+                        }
+                        
+                    } else if ($.isArray(arg)) {
+                        
+                        array.each(arg, function(tracker) {
+                            
+                            if (!trackersSet.hasOwnProperty(tracker)) {
+                                trackers.push(tracker);
+                                trackersSet[tracker] = true;
+                            }
+                        });
+                    }
+                });
             }
             
-            // create the global GA command queue
-            window._gaq = window._gaq || [];
-            
-            // intialize the account?
-            if (account) {
-                analytics.setAccount(account);
-            }
-            
-            // track the pageview?
-            if (track) {
-                analytics.trackPageview();
-            }
+            return new Analytics(trackers);
+        },
         
-            // load GA
-            scripts.load(
-                (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
-                ".google-analytics.com/ga.js"
-            );
+        // creates a method wrapper for the Analytics prototype 
+        // that implements one of the push methods
+        wrapPushMethod = function(method) {
+            
+            return (function(method) {
+                
+                return function() {
+                    
+                    var args = array(arguments),
+                        commands = [];
+                    
+                    // for each of our initialized trackers, set up a GA command
+                    array.each(this.trackers, function(tracker) {
+                        
+                        if (allTrackersSet[tracker]) {
+                            
+                            commands.push([(tracker.length === 0 ? "" : tracker + ".") + method].concat(args));
+                        }
+                    });
+                    
+                    // push the commands
+                    window._gaq.push(commands);
+                    return this;
+                };
+                
+            })("_" + method);
+        },
+        
+        // creates a method wrapper for the Analytics prototype
+        // that implements one of the callback methods
+        wrapCallbackMethod = function(method) {
+            
+            return (function(method) {
+                
+                return function(callback) {
+                    
+                    var args = array(arguments, 1),
+                        commands = [];
+                    
+                    if (typeof callback !== "function") {
+                        return;
+                    }
+                    
+                    // for each of our initialized trackers, push the callbacks that 
+                    // will invoke the given callback, passing the value returned by
+                    // each requested tracker's callback and the tracker object
+                    array.each(this.trackers, function(tracker) {
+                        
+                        if (allTrackersSet[tracker]) {
+                            
+                            commands.push(
+                                lang.partial(function(tracker, method, callback, args) {
+                                
+                                    // get the requested tracker
+                                    tracker = window._gat._getTrackerByName(tracker);
+                                    
+                                    // run the callback with the tracker method's result
+                                    callback(tracker[method].apply(tracker, args), tracker);
+                                
+                                }, tracker, method, callback, args)
+                            );
+                        }
+                    });
+                    
+                    // push the commands
+                    window._gaq.push.apply(window._gaq, commands);
+                    return this;
+                };
+                
+            })("_" + method);
+        },
+        
+        // all of the non-deprecated Google Analytics methods that
+        // can be called with Array arguments to _gaq.push(...)
+        // (as of 12/11/2012)
+        pushMethods = [
+            "addIgnoredOrganic",
+            "addIgnoredRef",
+            "addItem",
+            "addOrganic",
+            "addTrans",
+            "clearIgnoredOrganic",
+            "clearIgnoredRef",
+            "clearOrganic",
+            "cookiePathCopy",
+            "deleteCustomVar",
+            "getName",
+            "setAccount",
+            "link",
+            "linkByPost",
+            "setAllowAnchor",
+            "setAllowLinker",
+            "setCampContentKey",
+            "setCampMediumKey",
+            "setCampNameKey",
+            "setCampNOKey",
+            "setCampSourceKey",
+            "setCampTermKey",
+            "setCampaignCookieTimeout",
+            "setCampaignTrack",
+            "setClientInfo",
+            "setCookiePath",
+            "setCustomVar",
+            "setDetectFlash",
+            "setDetectTitle",
+            "setDomainName",
+            "setLocalGifPath",
+            "setLocalRemoteServerMode",
+            "setLocalServerMode",
+            "setReferrerOverride",
+            "setRemoteServerMode",
+            "setSampleRate",
+            "setSiteSpeedSampleRate",
+            "setSessionCookieTimeout",
+            "setVisitorCookieTimeout",
+            "trackEvent",
+            "trackPageview",
+            "trackSocial",
+            "trackTiming",
+            "trackTrans"
+        ],
+        
+        // all of the non-deprecated Google Analytics methods that
+        // can be called with callback function arguments to _gaq.push(...)
+        // (as of 12/11/2012)
+        callbackMethods = [
+            "getAccount",
+            "getClientInfo",
+            "getDetectFlash",
+            "getDetectTitle",
+            "getLinkerUrl",
+            "getLocalGifPath",
+            "getServiceMode",
+            "getVersion",
+            "getVisitorCustomVar"
+        ];
+    
+    // add push methods to the Analytics prototype
+    array.each(pushMethods, function(method) {
+        Analytics.prototype[method] = wrapPushMethod(method);
+    });
+    
+    // add callback methods to the Analytics prototype
+    array.each(callbackMethods, function(method) {
+        Analytics.prototype[method] = wrapCallbackMethod(method);
+    });
+    
+    // override setAccount so that we can keep track
+    // of which trackers are properly initialized
+    Analytics.prototype.setAccount = (function(setAccount) {
+        
+        return function() {
+            
+            array.each(this.trackers, function(tracker) {
+                allTrackersSet[tracker] = true;
+            });
+            setAccount.apply(this, array(arguments));
         };
+        
+    })(Analytics.prototype.setAccount);
+    
+    // mix the Analytics methods into our analytics plugin
+    // and set up the analytics plugin to use the default tracker
+    $.extend(analytics, Analytics.prototype);
+    lang.hitch(analytics, Analytics)([""]);
+    
+    // load Google Analytics
+    window._gaq = window._gaq || [];
+    scripts.load(
+        (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
+        ".google-analytics.com/ga.js"
+    );
     
     // export the anlytics plugin
     $pt.analytics = analytics;

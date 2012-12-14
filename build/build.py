@@ -140,7 +140,7 @@ if __name__ == "__main__":
                     output_path,
                 ),
                 shell=True,
-            )            
+            )
             
             # Create minified files with Google Closure Compiler
             subprocess.call(
