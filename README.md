@@ -21,7 +21,7 @@ Overview
 --------
 
 The easiest way to use the project is to
-<a href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum.min.js">download the current minified source</a>,
+[download the current minified source](https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum.min.js),
 add it to your website's static media and include it on your website's pages after you include jQuery:
 
 ```html
@@ -30,20 +30,54 @@ add it to your website's static media and include it on your website's pages aft
 ```
 
 The script adds a `$pt` global variable which you can use to conveniently access the utilities provided by
-jQuery Platinum. The utilities are also available on the jQuery object at `jQuery.platinum` or `$.platinum`.
+jquery-platinum. The utilities are also available on the jQuery object at `jQuery.platinum` or `$.platinum`.
 
 If you don't like the global `$pt` variable, you can remove it by calling `$pt.noConflict()`, which works
 just like jQuery's <code><a target="_blank" href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
 
 For more advanced usage, you can download a specific plugin, such as
-<a href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js">jquery.platinum-analytics.js</a>.
+[jquery.platinum-analytics.js](https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js).
 Or, you can fork the project and modify the
-<a href="https://github.com/skibblenybbles/jquery-platinum/blob/master/build/build.py">build script</a>.
+[build script](https://github.com/skibblenybbles/jquery-platinum/blob/master/build/build.py).
 The build script requires Python (for the script) and Java (for the included Google Closure Compiler).
 I have plans to implement a useful command line interface for creating custom builds, but I am focusing on the
 JavaScript at this point.
 
 The following sections describe all of the utilities and plugins provided by each jquery.platinum*.js script.
 As you might expect,
-<a href="https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js">jquery.platinum.js</a>
+[jquery.platinum.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js)
 contains the full build of all the utilities and plugins.
+
+[jquery.platinum-array-base.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-array-base.js)
+----------------------------------------------------------------------------------------------------------------------------
+
+This script contains array slicing, stepping and iterating utilities. It is similar to some of the functionality
+provided by native JavaScript and jQuery, but ultimately it is more expressive. The functions operate on JavaScript
+Arrays or array-like objects that have a `.length` attribute zero-based indexing, e.g. the `arguments` object
+that is available in a function body can be manipulated with these functions.
+
+#### `$pt.array(values, [start, end, step])`
+
+>   Takes a JavaScript Array or array-like object and converts it to a JavaScript Array. Optionally
+>   slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
+>   parameter controls the increment of the index counter during iteration. Negative `start` and `end`
+>   indexes are also supported. For example a `start` index of `-2` means to start at the second
+>   from the last index in the array.
+>
+>   The effect is to create an expressive array utility that mimics the slicing and stepping provided
+>   by Python's list implementation.
+>
+>   Arguments:
+>   *   `values` a JavaScript or Array or array-like object.
+>   *   `start` (optional) the index into the array where the iteration will start. It may be negative to index
+>   from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
+>   for the sign of the `step` argument.
+>   *   `end` (optional) the index into the array where the iteration will stop (non-inclusive). It may be negative
+>   to index from the end of the array. If set to `null` or `undefined`, the value is set to the "end" of the array
+>   appropriate for the sign of the `step` argument.
+>   *   `step` (optional) The amount by which to increment the array index counter during iteration. Use positive
+>   values to iterate forward and negative values to iterate in reverse. A value of `0` will be changed to `1` to
+>   avoid infinite iteration.
+
+
+
