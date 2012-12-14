@@ -11,8 +11,8 @@
     array.filter = function(iterable, fn, start, end, step) {
         var results = [],
             result;
-        array.each(iterable, function(value, i) {
-            result = fn(value, i);
+        array.each(iterable, function(value) {
+            result = fn(value);
             if (result) {
                 results.push(value);
             }
@@ -24,8 +24,8 @@
     // is encountered and return the final result
     array.every = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value, i) {
-            result = fn(value, i);
+        array.each(iterable, function(value) {
+            result = fn(value);
             if (!result) {
                 return false;
             }
@@ -37,8 +37,8 @@
     // is encountered and return the final result
     array.some = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value, i) {
-            result = fn(value, i);
+        array.each(iterable, function(value) {
+            result = fn(value);
             if (result) {
                 return false;
             }
@@ -50,8 +50,8 @@
     // is encountered and return the final value processed
     array.all = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value, i) {
-            if (!fn(value, i)) {
+        array.each(iterable, function(value) {
+            if (!fn(value)) {
                 result = value;
                 return false;
             }
@@ -63,8 +63,8 @@
     // is encountered and return the final value processed
     array.any = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value, i) {
-            if (fn(value, i)) {
+        array.each(iterable, function(value) {
+            if (fn(value)) {
                 result = value;
                 return false;
             }
@@ -76,8 +76,8 @@
     // a new array of the function's results
     array.map = function(iterable, fn, start, end, step) {
         var results = [];
-        array.each(iterable, function(value, i) {
-            results.push(fn(value, i));
+        array.each(iterable, function(value) {
+            results.push(fn(value));
         }, start, end, step);
         return results;
     };
@@ -86,8 +86,8 @@
     // that accumulates results onto an initial value
     array.reduce = function(iterable, fn, initial, start, end, step) {
         var result = initial;
-        array.each(iterable, function(value, i) {
-            result = fn(value, result, i);
+        array.each(iterable, function(value) {
+            result = fn(value, result);
         }, start, end, step);
         return result;
     };

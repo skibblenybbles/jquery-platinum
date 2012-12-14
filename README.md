@@ -6,8 +6,8 @@ A jQuery utility library for building fast-loading, professional frontend code.
 ### Project goals
 
 * Extend jQuery with expressive, useful utilities for arrays, objects and asynchronous operations
-* Provide normalized APIs for common website requirements like Google Analytics and social sharing buttons
-* Implement a build system to create custom, minified builds of the codebase tailored to specific needs
+* Implement normalized APIs for common website requirements like Google Analytics and social sharing buttons
+* Provide a build system to create custom, minified builds of the codebase tailored to specific needs
 
 This is a work-in-progress. Currently, the project provides:
 
@@ -33,7 +33,7 @@ The script adds a `$pt` global variable which you can use to conveniently access
 jQuery Platinum. The utilities are also available on the jQuery object at `jQuery.platinum` or `$.platinum`.
 
 If you don't like the global `$pt` variable, you can remove it by calling `$pt.noConflict()`, which works
-just like jQuery's <code><a href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
+just like jQuery's <code><a target="_blank" href="http://api.jquery.com/jQuery.noConflict/">noConflict()</a></code>.
 
 For more advanced usage, you can download a specific plugin, such as
 <a href="https://raw.github.com/skibblenybbles/jquery-platinum/master/jquery.platinum-analytics.min.js">jquery.platinum-analytics.js</a>.
@@ -44,5 +44,6 @@ I have plans to implement a useful command line interface for creating custom bu
 JavaScript at this point.
 
 The following sections describe all of the utilities and plugins provided by each jquery.platinum*.js script.
+As you might expect,
 <a href="https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum.js">jquery.platinum.js</a>
 contains the full build of all the utilities and plugins.

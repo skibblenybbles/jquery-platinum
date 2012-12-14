@@ -44,7 +44,7 @@
             
             // iterate
             for (i = start; i < end; i += step) {
-                value = fn.call(null, iterable[i], i);
+                value = fn.call(null, iterable[i]);
                 if (value === false) {
                     return;
                 }
@@ -58,7 +58,7 @@
             
             // iterate
             for (i = start; i > end; i += step) {
-                value = fn.call(null, iterable[i], i);
+                value = fn.call(null, iterable[i]);
                 if (value === false) {
                     return;
                 }
