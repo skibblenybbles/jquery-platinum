@@ -130,7 +130,7 @@ Parameter   | Description
 
 #### Returns
 
-`undefined` (no return value)
+`undefined` (no return value).
 
 #### Examples
 
@@ -166,7 +166,7 @@ Loads a JavaScript file with the given `url` and executes it. This is a lightwei
 `$.ajax()` with hard-coded values `dataType === true` and `cache === true`. According to jQuery's documentation,
 the provided `$.getScript()` sets `cache` to `false`, so this is probably a better choice for loading
 scripts asynchronously in most cases. It returns the resulting promise from calling `$.ajax()`, so you
-can hook a load callback by calling the return value's `done()` method.
+can register a load callback by calling the return value's `done()` method.
 
 #### Parameters
 
@@ -177,7 +177,7 @@ Parameter   | Description
 
 #### Returns
 
-A promise to load the requested script
+A promise to load the requested script.
 
 #### Example
 
@@ -194,10 +194,9 @@ $pt.scripts.load("//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.j
 
 *Includes jquery.platinum-array-base.js.*
 
-This script provides language helper utilities for binding
-functions to objects and currying arguments to functions. Combined judiciously with `$pt.array` utilities,
-the `$pt.lang` utilities can improve your code's readability and help you avoid common bugs introduced
-by JavaScript's built-in `for (;;)` syntax.
+This script provides language helper utilities for binding functions to objects and currying arguments
+to functions. Combined judiciously with `$pt.array` utilities, the `$pt.lang` utilities can improve
+your code's readability and help you avoid common bugs introduced by JavaScript's built-in `for (;;)` syntax.
 
 
 ### `$pt.lang.hitch(that, fn, [args ...])`
@@ -330,4 +329,132 @@ $("a").click($p.lang.partial(function(message, evt) {
 // ouput: It works!
 ```
 
+
+[jquery.platinum-analytics.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-analytics.js)
+------------------------------
+
+*Includes jquery.platinum-array-base.js, jquery.platinum-lang.js and jquery.platinum-scripts.js*
+
+This script wraps the Google Analytics (GA) asynchronous library with a powerful and convenient API. It makes the
+most common case of loading GA and tracking a pageview very simple, but it also enables you to manage complex
+analytics requirements on sites with multiple GA trackers.
+
+The functions provided by this script each return an opaque object that implements the GA methods. Rather
+than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write a more natural
+`$pt.analytics.trackPageview('/some-url/')` instead.
+
+You can also chain GA methods together, because each function in the `$pt.analytics` returns the opaque
+analytics object. Fore example, you can write a chain of commands like:
+
+```javascript
+$pt.analytics
+    .setAccount("UA-XXXXXXXX-Y")
+    .setCustomVar(1, "User State", "Authenticated", 2)
+    .trackPageview();
+
+// this is precisely equivalent to:
+_gaq.push(['_setAccount', "UA-XXXXXXXX-Y"]);
+_gaq.push(['_setCustomVar', 1, "User State", "Authenticated", 2]);
+_gaq.push(['_trackPageview']);
+```
+
+The above examples all assume usage of the "default tracker" whose name is `""`, the empty string.
+Another common pattern is to use a "rollup tracker" for all of your Web properties and a site-specific
+tracker for each site. With `$pt.analytics`, you can choose a tracker object by invoking `$pt.analytics`
+as a function and passing it the names of the trackers you would like to create and use:
+
+```javascript
+$.pt.analytics("rollupTracker")
+    .setAccount("UA-XXXXXXXX-1")
+    .trackPageview();
+
+$.pt.analytics("siteTracker")
+    .setAccount("UA-XXXXXXXX-2")
+    .trackPageview();
+
+// this is precisely equivalent to:
+_gaq.push(['rollupTracker._setAccount', "UA-XXXXXXXX-1"]);
+_gaq.push(['rollupTracker._trackPageview']);
+_gaq.push(['siteTracker._setAccount', "UA-XXXXXXXX-2"]);
+_gaq.push(['siteTracker._trackPageview']);
+```
+
+Under the hood, GA creates a new tracker object on-demand whenever you make `_gaq.push(...)` calls
+like those in the previous example, i.e. after calling `_gaq.push(['exampleTracker.trackPageview'])`, 
+GA will use the existing tracker named `'exampleTracker'` or create a new tracker named `'exampleTracker'`
+if it doesn't already exist. A subsequent call to `_gat.getTrackerByName('exampleTracker')` would
+return this tracker object.
+
+The previous example on using multiple trackers with `$pt.analytics(...)` has a nicer syntax than
+`_gaq.push(...)`, but it doesn't save you very much typing. The good news is that `$pt.analytics(...)`
+also allows you to pass it multiple tracker names, so you can send the same commands to more than
+one tracker at the same time:
+
+```javascript
+// set up the trackers
+$pt.analytics("rollupTracker").setAccount("UA-XXXXXXXX-1");
+$pt.analytics("siteTracker").setAccount("UA-XXXXXXXX-2");
+
+// set a custom variable and track a pageview with both trackers
+$pt.analytics("rollupTracker", "siteTracker")
+    .setCustomVar(1, "User State", "Authenticated", 2)
+    .trackPageview();
+```
+
+An alternative, equivalent syntax allows you to pass an array to $pt.analytics(...)
+
+```javascript
+// set up the trackers
+$pt.analytics("rollupTracker").setAccount("UA-XXXXXXXX-1");
+$pt.analytics("siteTracker").setAccount("UA-XXXXXXXX-2");
+
+// set a custom variable and track a pageview with both trackers
+$pt.analytics(["rollupTracker", "siteTracker"])
+    .setCustomVar(1, "User State", "Authenticated", 2)
+    .trackPageview();
+```
+
+Of course, we could store the tracker names in an Array and pass that:
+
+```javascript
+var trackers = ["rollupTracker", "siteTracker"];
+
+// set up the trackers
+$pt.analytics("rollupTracker").setAccount("UA-XXXXXXXX-1");
+$pt.analytics("siteTracker").setAccount("UA-XXXXXXXX-2");
+
+// set a custom variable and track a pageview with both trackers
+$pt.analytics(trackers)
+    .setCustomVar(1, "User State", "Authenticated", 2)
+    .trackPageview();
+```
+
+Finally, we can also pass `"*"` to `$pt.analytics(...)` to use all known trackers, i.e.
+all trackers that have been set up through `$pt.analytics(...)` with a call to 
+`setAccount(...)`:
+
+```javascript
+// set up the trackers
+$pt.analytics("rollupTracker").setAccount("UA-XXXXXXXX-1");
+$pt.analytics("siteTracker").setAccount("UA-XXXXXXXX-2");
+
+// set a custom variable and track a pageview with both trackers
+$pt.analytics("*")
+    .setCustomVar(1, "User State", "Authenticated", 2)
+    .trackPageview();
+```
+
+The previous four examples are all precisely equivalent to calling:
+
+```javascript
+// set up the trackers
+_gaq.push(['rollupTracker._setAccount', "UA-XXXXXXXX-1"]);
+_gaq.push(['siteTracker._setAccount', "UA-XXXXXXXX-2"]);
+
+// set a custom variable and track a pageview with both trackers
+_gaq.push(['rollupTracker._setCustomVar', 1, "User State", "Authenticated", 2]);
+_gaq.push(['siteTracker._setCustomVar', 1, "User State", "Authenticated", 2]);
+_gaq.push(['rollupTracker._trackPageview']);
+_gaq.push(['siteTracker._trackPageview']);
+```
 
