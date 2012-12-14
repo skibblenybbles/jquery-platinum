@@ -84,6 +84,8 @@ Argument    | Description
 A new JavaScript Array with sliced and stepped values from the original `values` argument.
 
 
+***
+
 ### `$pt.array.each(values, fn, [start, end, stop])`
 
 Takes a JavaScript Array or array-like object and runs the given function `fn` for each value in the array.
