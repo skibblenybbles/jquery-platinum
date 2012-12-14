@@ -3,6 +3,8 @@ jquery-platinum
 
 A jQuery utility library for building fast-loading, professional frontend code.
 
+*Important! This project is a work-in-progress, so the APIs may change. If you want a snapshot of the current version, clone it or fork it.*
+
 ### Project goals
 
 * Extend jQuery with expressive, useful utilities for arrays, objects and asynchronous operations
@@ -16,7 +18,6 @@ This is a work-in-progress. Currently, the project provides:
 * Basic asynchronous script-loading utilities using a light wrapper around `$.ajax()`
 * A convenient API wrapping Google Analytics' asynchronous library
 * A simple build system that automatically creates full and minified versions of each .js file in the src directory
-
 
 Overview
 --------
