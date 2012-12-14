@@ -58,7 +58,7 @@ that is available in a function body can be manipulated with these functions.
 
 ### `$pt.array(values, [start, end, step])`
 
-Takes a JavaScript Array or array-like object and converts it to a JavaScript Array. Optionally
+Takes a JavaScript Array or array-like object and returns a new JavaScript Array. Optionally
 slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
 parameter controls the increment of the index counter during iteration. Negative `start` and `end`
 indexes are also supported. For example a `start` index of `-2` means to start at the second
@@ -69,7 +69,7 @@ by Python's list implementation.
 
 #### Arguments:
 
-*   `values` a JavaScript or Array or array-like object.
+*   `values` a JavaScript Array or array-like object.
 *   `start` (optional) the index into the array where the iteration will start. It may be negative to index
     from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
     for the sign of the `step` argument.
@@ -83,3 +83,23 @@ by Python's list implementation.
 #### Returns:
 
 A new JavaScript Array with sliced and stepped values from the original `values` argument.
+
+
+### `$pt.array.each(values, fn, [start, end, stop])`
+
+Takes a JavaScript Array or array-like object and runs the given function `fn` for each value in the array.
+Optionally slices and steps through the input array in the same way as `$pt.array()`.
+
+#### Arguments:
+
+*   `values` a JavaScript Array or array-like object.
+*   `fn` a function that accepts a single argument that will be called for each object processed in the `values` array.
+*   `start` (optional) see `$pt.array()`.
+*   `end` (optional) see `$pt.array()`.
+*   `step` (optional) see `$pt.array()`.
+
+
+#### Returns:
+
+`undefined` (no return)
+
