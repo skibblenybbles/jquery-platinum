@@ -158,8 +158,6 @@ $pt.array.each(values, function(value) { console.log(value); }, -1, -4, -1);
 [jquery.platinum-scripts.js](https://github.com/skibblenybbles/jquery-platinum/blob/master/jquery.platinum-scripts.js)
 ----------------------------
 
-*Includes jquery.platinum-array-base.js.*
-
 This script provides utilities for loading scripts asynchronously.
 
 ### `$pt.scripts.load(url, options)`
