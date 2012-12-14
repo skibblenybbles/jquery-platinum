@@ -58,26 +58,28 @@ that is available in a function body can be manipulated with these functions.
 
 #### `$pt.array(values, [start, end, step])`
 
->   Takes a JavaScript Array or array-like object and converts it to a JavaScript Array. Optionally
->   slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
->   parameter controls the increment of the index counter during iteration. Negative `start` and `end`
->   indexes are also supported. For example a `start` index of `-2` means to start at the second
->   from the last index in the array.
->
->   The effect is to create an expressive array utility that mimics the slicing and stepping provided
->   by Python's list implementation.
->
->   Arguments:
->   *   `values` a JavaScript or Array or array-like object.
->   *   `start` (optional) the index into the array where the iteration will start. It may be negative to index
->   from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
->   for the sign of the `step` argument.
->   *   `end` (optional) the index into the array where the iteration will stop (non-inclusive). It may be negative
->   to index from the end of the array. If set to `null` or `undefined`, the value is set to the "end" of the array
->   appropriate for the sign of the `step` argument.
->   *   `step` (optional) The amount by which to increment the array index counter during iteration. Use positive
->   values to iterate forward and negative values to iterate in reverse. A value of `0` will be changed to `1` to
->   avoid infinite iteration.
+Takes a JavaScript Array or array-like object and converts it to a JavaScript Array. Optionally
+slices the array beginning at the `start` index and ending at the `end - 1` index. The `step`
+parameter controls the increment of the index counter during iteration. Negative `start` and `end`
+indexes are also supported. For example a `start` index of `-2` means to start at the second
+from the last index in the array.
 
+The effect is to create an expressive array utility that mimics the slicing and stepping provided
+by Python's list implementation.
 
+##### Arguments:
 
+*   `values` a JavaScript or Array or array-like object.
+*   `start` (optional) the index into the array where the iteration will start. It may be negative to index
+    from the end of the array. If set to `null` or `undefined`, the value is set to the "start" of the array appropriate
+    for the sign of the `step` argument.
+*   `end` (optional) the index into the array where the iteration will stop (non-inclusive). It may be negative
+    to index from the end of the array. If set to `null` or `undefined`, the value is set to the "end" of the array
+    appropriate for the sign of the `step` argument.
+*   `step` (optional) The amount by which to increment the array index counter during iteration. Use positive
+    values to iterate forward and negative values to iterate in reverse. A value of `0` will be changed to `1` to
+    avoid infinite iteration.
+
+##### Returns:
+
+A new JavaScript Array with sliced and stepped values from the original `values` argument.
