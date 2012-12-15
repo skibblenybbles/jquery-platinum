@@ -391,7 +391,7 @@ This script wraps the Google Analytics (GA) asynchronous library with a convenie
 case of loading GA and tracking a pageview very simple, but it also enables you to manage complex analytics
 requirements on sites with multiple GA trackers.
 
-By including this script on your page, the Google Analytics ga.js script will be automatically loaded 
+When you begin using `$pt.analytics` methods, the Google Analtyics ga.js script will be automatically loaded 
 using `$pt.scripts.load()`, so you do not need to *(and should not)* put the usual GA `<script>` tags
 in your HTML to load Google Analytics. However, you must call the `setAccount()` method on the
 `$pt.analytics` object to configure your GA account before calling its other methods (more details below).
@@ -623,9 +623,9 @@ $pt.analytics.load().done(function() {
 ### `$pt.analytics(...).setAccount(account)`
 
 While these are simply methods implemented by the opaque GA wrapper object, they are important, because
-they must be called before other `$pt.analytics*` methods will work. Calling `setAccount(...)` makes
+they must be called before other `$pt.analytics` methods will work. Calling `setAccount(...)` makes
 `$pt.analytics` "aware" of a tracker name, and until it is called, any tracker methods that you call
-through `$pt.analytics*` will be ignored.
+through `$pt.analytics` will be ignored.
 
 When you call `setAccount(...)`, it calls `$pt.analytics.load()`, so the ga.js script will be loaded 
 on-demand as soon as you start to use `$pt.analtyics*` methods. Of course, you can always call 
