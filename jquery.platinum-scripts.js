@@ -28,8 +28,9 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
+    // the scripts plugin
     var scripts = { };
     
     // return a promise to load a script
@@ -46,7 +47,11 @@ window.$pt.noConflict = noConflict;
     // export the scripts plugin
     $pt.scripts = scripts;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var scripts = $pt.scripts,
+    scriptsLoad = scripts.load;
 
 
 ////////////////////////////////////////

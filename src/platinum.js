@@ -1,3 +1,2 @@
-// requires: analytics.js, array-base.js, array.js, lang.js, scripts.js
-
-// This file is used to generate the full minified output by the build script.
+// requires: analytics.js, array.js, lang.js, scripts.js, social.js
+// requires all of the dependencies to build the full jquery.platinum.js suite

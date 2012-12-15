@@ -28,7 +28,7 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // convert the given array-like object to an Array
@@ -97,18 +97,19 @@ window.$pt.noConflict = noConflict;
     // export the array plugin
     $pt.array = array;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var array = $pt.array,
+    arrayEach = array.each;
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
-        // the required plugins
-        array = $pt.array,
-        
         // the lang plugin
         lang = { },
         
@@ -162,7 +163,14 @@ window.$pt.noConflict = noConflict;
     // export the lang plugin
     $pt.lang = lang;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var lang = $pt.lang,
+    langHitch = lang.hitch,
+    langPartial = lang.partial,
+    langDelegate = lang.delegate,
+    langReady = lang.ready;
 
 
 ////////////////////////////////////////

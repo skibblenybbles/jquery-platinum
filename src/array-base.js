@@ -1,6 +1,6 @@
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // convert the given array-like object to an Array
@@ -69,4 +69,8 @@
     // export the array plugin
     $pt.array = array;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var array = $pt.array,
+    arrayEach = array.each;

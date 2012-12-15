@@ -1,5 +1,5 @@
 /**
- * @license jquery.platinum-social-base.js
+ * @license jquery.platinum-social.js
  *
  * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
@@ -276,6 +276,11 @@ var socialParsers,
 
 // define names for the wrapping closure
 var social = $pt.social;
+
+////////////////////////////////////////
+// source: jquery.platinum-social.js
+// requires: social-base.js
+// requires all of the dependencies to build the full jquery.platinum-social.js suite
 
 
 ////////////////////////////////////////

@@ -1,11 +1,8 @@
 // requires: array-base.js
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
-        // the required plugins
-        array = $pt.array,
-        
         // the lang plugin
         lang = { },
         
@@ -59,4 +56,11 @@
     // export the lang plugin
     $pt.lang = lang;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var lang = $pt.lang,
+    langHitch = lang.hitch,
+    langPartial = lang.partial,
+    langDelegate = lang.delegate,
+    langReady = lang.ready;

@@ -28,7 +28,7 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // convert the given array-like object to an Array
@@ -97,18 +97,19 @@ window.$pt.noConflict = noConflict;
     // export the array plugin
     $pt.array = array;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var array = $pt.array,
+    arrayEach = array.each;
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
-        // the required plugins
-        array = $pt.array,
-        
         // the lang plugin
         lang = { },
         
@@ -162,14 +163,22 @@ window.$pt.noConflict = noConflict;
     // export the lang plugin
     $pt.lang = lang;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var lang = $pt.lang,
+    langHitch = lang.hitch,
+    langPartial = lang.partial,
+    langDelegate = lang.delegate,
+    langReady = lang.ready;
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
+    // the scripts plugin
     var scripts = { };
     
     // return a promise to load a script
@@ -186,7 +195,11 @@ window.$pt.noConflict = noConflict;
     // export the scripts plugin
     $pt.scripts = scripts;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var scripts = $pt.scripts,
+    scriptsLoad = scripts.load;
 
 ////////////////////////////////////////
 // source: jquery.platinum-analytics.js
@@ -195,11 +208,6 @@ window.$pt.noConflict = noConflict;
 (function() {
     
     var 
-        // the required plugins
-        array = $pt.array,
-        lang = $pt.lang,
-        scripts = $pt.scripts,
-        
         // all known trackers as an Array for easy iteration
         allTrackers = [],
         
@@ -215,7 +223,7 @@ window.$pt.noConflict = noConflict;
             // update all known trackers, but skip
             // if we were passed all trackers
             if (trackers !== allTrackers) {                
-                array.each(trackers, function(tracker) {
+                arrayEach(trackers, function(tracker) {
                     if (!allTrackersSet.hasOwnProperty(tracker)) {
                         allTrackers.push(tracker);
                         allTrackersSet[tracker] = false;
@@ -247,7 +255,7 @@ window.$pt.noConflict = noConflict;
             } else {
                 
                 // each passed argument may be a string or Array
-                array.each(arguments, function(arg) {
+                arrayEach(arguments, function(arg) {
                     
                     if (typeof arg === "string") {
                         
@@ -258,7 +266,7 @@ window.$pt.noConflict = noConflict;
                         
                     } else if ($.isArray(arg)) {
                         
-                        array.each(arg, function(tracker) {
+                        arrayEach(arg, function(tracker) {
                             
                             if (!trackersSet.hasOwnProperty(tracker)) {
                                 trackers.push(tracker);
@@ -284,7 +292,7 @@ window.$pt.noConflict = noConflict;
                         commands = [];
                     
                     // for each of our initialized trackers, set up a GA command
-                    array.each(this.trackers, function(tracker) {
+                    arrayEach(this.trackers, function(tracker) {
                         
                         if (allTrackersSet[tracker]) {
                             
@@ -319,12 +327,12 @@ window.$pt.noConflict = noConflict;
                     // will call the tracker's method and invoke the given callback,
                     // passing it the value returned by the tracker's method
                     // and the tracker object
-                    array.each(this.trackers, function(tracker) {
+                    arrayEach(this.trackers, function(tracker) {
                         
                         if (allTrackersSet[tracker]) {
                             
                             commands.push(
-                                lang.partial(function(tracker, method, callback, args) {
+                                langPartial(function(tracker, method, callback, args) {
                                     
                                     // get the requested tracker
                                     tracker = window._gat._getTrackerByName(tracker);
@@ -420,7 +428,7 @@ window.$pt.noConflict = noConflict;
             
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
-            loadPromise = scripts.load(
+            loadPromise = scriptsLoad(
                 (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
                 ".google-analytics.com/ga.js"
             ).promise();
@@ -435,12 +443,12 @@ window.$pt.noConflict = noConflict;
     };
     
     // add push methods to the Analytics prototype
-    array.each(pushMethods, function(method) {
+    arrayEach(pushMethods, function(method) {
         Analytics.prototype[method] = wrapPushMethod(method);
     });
     
     // add callback methods to the Analytics prototype
-    array.each(callbackMethods, function(method) {
+    arrayEach(callbackMethods, function(method) {
         Analytics.prototype[method] = wrapCallbackMethod(method);
     });
     
@@ -454,7 +462,7 @@ window.$pt.noConflict = noConflict;
             analytics.load();
             
             // set each tracker as initialized
-            array.each(this.trackers, function(tracker) {
+            arrayEach(this.trackers, function(tracker) {
                 allTrackersSet[tracker] = true;
             });
             return setAccount.apply(this, array(arguments));
@@ -464,12 +472,15 @@ window.$pt.noConflict = noConflict;
     
     // make the analytics plugin delegate to the methods
     // of an Analytics instance bound to the default tracker, ""
-    lang.delegate(analytics, new Analytics([""]));
+    langDelegate(analytics, new Analytics([""]));
     
     // export the anlytics plugin
     $pt.analytics = analytics;
     
 })();
+
+// define names for the wrapping closure
+var analytics = $pt.analytics;
 
 
 ////////////////////////////////////////

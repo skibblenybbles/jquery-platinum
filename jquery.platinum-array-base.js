@@ -28,7 +28,7 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // convert the given array-like object to an Array
@@ -97,7 +97,11 @@ window.$pt.noConflict = noConflict;
     // export the array plugin
     $pt.array = array;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var array = $pt.array,
+    arrayEach = array.each;
 
 
 ////////////////////////////////////////

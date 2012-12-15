@@ -28,7 +28,7 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // convert the given array-like object to an Array
@@ -97,15 +97,17 @@ window.$pt.noConflict = noConflict;
     // export the array plugin
     $pt.array = array;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var array = $pt.array,
+    arrayEach = array.each;
 
 ////////////////////////////////////////
 // source: jquery.platinum-array.js
 // requires: array-base.js
 
-(function($, $pt, window, document) {
-    
-    var array = $pt.array;
+(function() {
     
     // run a function on each item in any array and
     // return a new array populated with values from
@@ -114,7 +116,7 @@ window.$pt.noConflict = noConflict;
     array.filter = function(iterable, fn, start, end, step) {
         var results = [],
             result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (result) {
                 results.push(value);
@@ -127,7 +129,7 @@ window.$pt.noConflict = noConflict;
     // is encountered and return the final result
     array.every = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (!result) {
                 return false;
@@ -140,7 +142,7 @@ window.$pt.noConflict = noConflict;
     // is encountered and return the final result
     array.some = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (result) {
                 return false;
@@ -153,7 +155,7 @@ window.$pt.noConflict = noConflict;
     // is encountered and return the final value processed
     array.all = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             if (!fn(value)) {
                 result = value;
                 return false;
@@ -166,7 +168,7 @@ window.$pt.noConflict = noConflict;
     // is encountered and return the final value processed
     array.any = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             if (fn(value)) {
                 result = value;
                 return false;
@@ -179,7 +181,7 @@ window.$pt.noConflict = noConflict;
     // a new array of the function's results
     array.map = function(iterable, fn, start, end, step) {
         var results = [];
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             results.push(fn(value));
         }, start, end, step);
         return results;
@@ -189,13 +191,22 @@ window.$pt.noConflict = noConflict;
     // that accumulates results onto an initial value
     array.reduce = function(iterable, fn, initial, start, end, step) {
         var result = initial;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value, result);
         }, start, end, step);
         return result;
     };
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var arrayFilter = array.filter,
+    arrayEvery = array.every,
+    arraySome = array.some,
+    arrayAll = array.all,
+    arrayAny = array.any,
+    arrayMap = array.map,
+    arrayReduce = array.reduce;
 
 
 ////////////////////////////////////////

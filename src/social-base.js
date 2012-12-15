@@ -1,12 +1,12 @@
 // requires: array-base.js, lang.js
 
-(function($, $pt, window, document) {
+// define names for the wrapping closure
+var socialParsers,
+    socialLoaders;
+
+(function() {
     
     var
-        // the required plugins
-        array = $pt.array,
-        lang = $pt.lang,
-        
         // the load promise for each requested network
         loadPromises = { },
         
@@ -61,19 +61,19 @@
         
         var parser = parsers[network],
             loadPromise = loadPromises[network],
-            readyPromise = lang.ready();
+            readyPromise = langReady();
         
         if (parser && loadPromise) {
             
-            done = typeof done === "function" ? lang.hitch(this, done) : null;
+            done = typeof done === "function" ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
             $.when(loadPromise, readyPromise).done(
-                lang.hitch(this,
+                langHitch(this,
                     function(parser, done, delay) {
                         
                         // parse the buttons
-                        array.each(this, parser);
+                        arrayEach(this, parser);
                         
                         // optionally after a delay, run the callback 
                         if (done !== null) {
@@ -88,12 +88,15 @@
         return this;
     };
     
-    // export the parsers and loaders objects so they can be populated by 
-    // each social-<network>.js script
-    social.loaders = loaders;
-    social.parsers = parsers;
+    // export the parsers and loaders objects to the wrapping closure
+    // so they can be populated by each social-<network>.js script
+    socialLoaders = loaders;
+    socialParsers = parsers;
     
     // export the social plugin
     $pt.social = social;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var social = $pt.social;

@@ -1,8 +1,6 @@
 // requires: array-base.js
 
-(function($, $pt, window, document) {
-    
-    var array = $pt.array;
+(function() {
     
     // run a function on each item in any array and
     // return a new array populated with values from
@@ -11,7 +9,7 @@
     array.filter = function(iterable, fn, start, end, step) {
         var results = [],
             result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (result) {
                 results.push(value);
@@ -24,7 +22,7 @@
     // is encountered and return the final result
     array.every = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (!result) {
                 return false;
@@ -37,7 +35,7 @@
     // is encountered and return the final result
     array.some = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value);
             if (result) {
                 return false;
@@ -50,7 +48,7 @@
     // is encountered and return the final value processed
     array.all = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             if (!fn(value)) {
                 result = value;
                 return false;
@@ -63,7 +61,7 @@
     // is encountered and return the final value processed
     array.any = function(iterable, fn, start, end, step) {
         var result;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             if (fn(value)) {
                 result = value;
                 return false;
@@ -76,7 +74,7 @@
     // a new array of the function's results
     array.map = function(iterable, fn, start, end, step) {
         var results = [];
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             results.push(fn(value));
         }, start, end, step);
         return results;
@@ -86,10 +84,19 @@
     // that accumulates results onto an initial value
     array.reduce = function(iterable, fn, initial, start, end, step) {
         var result = initial;
-        array.each(iterable, function(value) {
+        arrayEach(iterable, function(value) {
             result = fn(value, result);
         }, start, end, step);
         return result;
     };
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var arrayFilter = array.filter,
+    arrayEvery = array.every,
+    arraySome = array.some,
+    arrayAll = array.all,
+    arrayAny = array.any,
+    arrayMap = array.map,
+    arrayReduce = array.reduce;

@@ -1,13 +1,8 @@
 // requires: array-base.js, lang.js, scripts.js
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
-        // the required plugins
-        array = $pt.array,
-        lang = $pt.lang,
-        scripts = $pt.scripts,
-        
         // all known trackers as an Array for easy iteration
         allTrackers = [],
         
@@ -23,7 +18,7 @@
             // update all known trackers, but skip
             // if we were passed all trackers
             if (trackers !== allTrackers) {                
-                array.each(trackers, function(tracker) {
+                arrayEach(trackers, function(tracker) {
                     if (!allTrackersSet.hasOwnProperty(tracker)) {
                         allTrackers.push(tracker);
                         allTrackersSet[tracker] = false;
@@ -55,7 +50,7 @@
             } else {
                 
                 // each passed argument may be a string or Array
-                array.each(arguments, function(arg) {
+                arrayEach(arguments, function(arg) {
                     
                     if (typeof arg === "string") {
                         
@@ -66,7 +61,7 @@
                         
                     } else if ($.isArray(arg)) {
                         
-                        array.each(arg, function(tracker) {
+                        arrayEach(arg, function(tracker) {
                             
                             if (!trackersSet.hasOwnProperty(tracker)) {
                                 trackers.push(tracker);
@@ -92,7 +87,7 @@
                         commands = [];
                     
                     // for each of our initialized trackers, set up a GA command
-                    array.each(this.trackers, function(tracker) {
+                    arrayEach(this.trackers, function(tracker) {
                         
                         if (allTrackersSet[tracker]) {
                             
@@ -127,12 +122,12 @@
                     // will call the tracker's method and invoke the given callback,
                     // passing it the value returned by the tracker's method
                     // and the tracker object
-                    array.each(this.trackers, function(tracker) {
+                    arrayEach(this.trackers, function(tracker) {
                         
                         if (allTrackersSet[tracker]) {
                             
                             commands.push(
-                                lang.partial(function(tracker, method, callback, args) {
+                                langPartial(function(tracker, method, callback, args) {
                                     
                                     // get the requested tracker
                                     tracker = window._gat._getTrackerByName(tracker);
@@ -228,7 +223,7 @@
             
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
-            loadPromise = scripts.load(
+            loadPromise = scriptsLoad(
                 (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
                 ".google-analytics.com/ga.js"
             ).promise();
@@ -243,12 +238,12 @@
     };
     
     // add push methods to the Analytics prototype
-    array.each(pushMethods, function(method) {
+    arrayEach(pushMethods, function(method) {
         Analytics.prototype[method] = wrapPushMethod(method);
     });
     
     // add callback methods to the Analytics prototype
-    array.each(callbackMethods, function(method) {
+    arrayEach(callbackMethods, function(method) {
         Analytics.prototype[method] = wrapCallbackMethod(method);
     });
     
@@ -262,7 +257,7 @@
             analytics.load();
             
             // set each tracker as initialized
-            array.each(this.trackers, function(tracker) {
+            arrayEach(this.trackers, function(tracker) {
                 allTrackersSet[tracker] = true;
             });
             return setAccount.apply(this, array(arguments));
@@ -272,9 +267,12 @@
     
     // make the analytics plugin delegate to the methods
     // of an Analytics instance bound to the default tracker, ""
-    lang.delegate(analytics, new Analytics([""]));
+    langDelegate(analytics, new Analytics([""]));
     
     // export the anlytics plugin
     $pt.analytics = analytics;
     
-})($, $pt, window, document);
+})();
+
+// define names for the wrapping closure
+var analytics = $pt.analytics;
