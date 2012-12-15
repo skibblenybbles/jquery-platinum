@@ -16,13 +16,13 @@ var
             window.$pt = pt;
             return $pt;
         }
-    })(window.$pt);
-
-// the global $pt and $.platinum values
-window.$pt = $.platinum = $.platinum || { };
+    })(window.$pt),
+    
+    // the clousure and global $pt and $.platinum values
+    $pt = window.$pt = $.platinum = $.platinum || { };
 
 // set up noConflict()
-window.$pt.noConflict = noConflict;
+$pt.noConflict = noConflict;
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js

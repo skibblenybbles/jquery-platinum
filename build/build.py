@@ -68,13 +68,13 @@ echo '            var $pt = window.$pt;' ;
 echo '            window.$pt = pt;' ;
 echo '            return $pt;' ;
 echo '        }' ;
-echo '    })(window.$pt);' ;
-echo '' ;
-echo '// the global $pt and $.platinum values' ;
-echo 'window.$pt = $.platinum = $.platinum || { };' ;
+echo '    })(window.$pt),' ;
+echo '    ' ;
+echo '    // the clousure and global $pt and $.platinum values' ;
+echo '    $pt = window.$pt = $.platinum = $.platinum || { };' ;
 echo '' ;
 echo '// set up noConflict()' ;
-echo 'window.$pt.noConflict = noConflict;' ;
+echo '$pt.noConflict = noConflict;' ;
 echo '' ;
 %s 
 echo '' ;
