@@ -221,7 +221,7 @@
         // the promise to load the Google Analytics script
         loadPromise = null;
     
-    // add a method to the analytics plugin that loads Google Analytics
+    // loads Google Analytics ga.js
     analytics.load = function() {
         
         if (loadPromise === null) {
@@ -234,6 +234,11 @@
             ).promise();
         }
         
+        return loadPromise;
+    };
+    
+    // get the promise to load Google Analytics ga.js
+    analytics.promise = function() {
         return loadPromise;
     };
     

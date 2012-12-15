@@ -105,8 +105,20 @@ window.$pt.noConflict = noConflict;
 
 (function($, $pt, window, document) {
     
-    var array = $pt.array,
-        lang = { };
+    var 
+        // the required plugins
+        array = $pt.array,
+        
+        // the lang plugin
+        lang = { },
+        
+        // the document ready promise
+        readyPromise = new $.Deferred();
+    
+    // set up the document ready promise
+    $(document).ready(function() {
+        readyPromise.resolve();
+    });
     
     // create a function with its "this" bound to the "that" argument
     // and curry any additional arguments
@@ -142,6 +154,11 @@ window.$pt.noConflict = noConflict;
         }
     };
     
+    // return a promise that gets fulfilled when the document is ready
+    lang.ready = function() {
+        return readyPromise;
+    };
+    
     // export the lang plugin
     $pt.lang = lang;
     
@@ -175,7 +192,7 @@ window.$pt.noConflict = noConflict;
 // source: jquery.platinum-analytics.js
 // requires: array-base.js, lang.js, scripts.js
 
-(function($, $pt, window, document) {
+(function() {
     
     var 
         // the required plugins
@@ -396,7 +413,7 @@ window.$pt.noConflict = noConflict;
         // the promise to load the Google Analytics script
         loadPromise = null;
     
-    // add a method to the analytics plugin that loads Google Analytics
+    // loads Google Analytics ga.js
     analytics.load = function() {
         
         if (loadPromise === null) {
@@ -409,6 +426,11 @@ window.$pt.noConflict = noConflict;
             ).promise();
         }
         
+        return loadPromise;
+    };
+    
+    // get the promise to load Google Analytics ga.js
+    analytics.promise = function() {
         return loadPromise;
     };
     
@@ -447,7 +469,7 @@ window.$pt.noConflict = noConflict;
     // export the anlytics plugin
     $pt.analytics = analytics;
     
-})($, $pt, window, document);
+})();
 
 
 ////////////////////////////////////////

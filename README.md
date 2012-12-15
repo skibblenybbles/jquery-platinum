@@ -401,7 +401,7 @@ The methods provided by `$pt.analytics` each return an opaque object that wraps 
 Rather than using GA's obscure `_gaq.push(['_trackPageview', '/some-url/'])` syntax, you can write the more natural
 syntax `$pt.analytics.trackPageview('/some-url/')` instead.
 
-Each function in `$pt.analytics` returns the opaque analytics object, so you can chain GA methods
+Each method in `$pt.analytics` returns the opaque analytics object, so you can chain GA methods
 together. Fore example, you can write a chain of commands like:
 
 ```javascript
@@ -600,7 +600,8 @@ discussion above for sample usage.
 
 If the Google Analytics ga.js script has not yet loaded, this method loads it using `$pt.scripts.load(...)`.
 This method always returns the promise to load the ga.js script, so you can use the return value to
-monitor the loading of the ga.js script.
+monitor the loading of the ga.js script. However, if this is your purpose, it is more semantically correct
+to call `$pt.analytics.promise()`.
 
 #### Parameters
 
@@ -608,12 +609,37 @@ None.
 
 #### Returns
 
-A promise to load the Google Analytics ga.js script.
+The promise to load the Google Analytics ga.js script.
 
 #### Examples
 
 ```javascript
 $pt.analytics.load().done(function() {
+    console.log("Google Analytics has loaded.");
+});
+```
+
+
+### `$pt.analytics.promise()`
+
+Gets the promise to load Google Analytics ga.js script. This will return `null` if one of
+`$pt.analytics.load()`, `$pt.analytics.setAccount(...)` or `$pt.analytics(...).setAccount(...)`
+has not yet been called.
+
+#### Parameters
+
+None.
+
+#### Returns
+
+The promise to load the Google Analytics ga.js script or `null` if the load has not yet been
+initiated.
+
+#### Examples
+
+```javascript
+$pt.analytics.load();
+$pt.analytics.promise().done(function() {
     console.log("Google Analytics has loaded.");
 });
 ```

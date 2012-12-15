@@ -2,8 +2,20 @@
 
 (function($, $pt, window, document) {
     
-    var array = $pt.array,
-        lang = { };
+    var 
+        // the required plugins
+        array = $pt.array,
+        
+        // the lang plugin
+        lang = { },
+        
+        // the document ready promise
+        readyPromise = new $.Deferred();
+    
+    // set up the document ready promise
+    $(document).ready(function() {
+        readyPromise.resolve();
+    });
     
     // create a function with its "this" bound to the "that" argument
     // and curry any additional arguments
@@ -37,6 +49,11 @@
                 target[name] = lang.hitch(source, source[name]);
             }
         }
+    };
+    
+    // return a promise that gets fulfilled when the document is ready
+    lang.ready = function() {
+        return readyPromise;
     };
     
     // export the lang plugin
