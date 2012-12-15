@@ -37,6 +37,7 @@
         // the analytics plugin
         analytics = function() {
             // determine the requested trackers
+            // and avoid duplicates using the "set"
             var trackers = [],
                 trackersSet = { };
             
@@ -217,8 +218,24 @@
             "getVisitorCustomVar"
         ],
         
-        // the promise to load the script
-        scriptPromise;
+        // the promise to load the Google Analytics script
+        loadPromise = null;
+    
+    // add a method to the analytics plugin that loads Google Analytics
+    analytics.load = function() {
+        
+        if (loadPromise === null) {
+            
+            // initialize the Google Analytics command queue and load ga.js
+            window._gaq = window._gaq || [];
+            loadPromise = scripts.load(
+                (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
+                ".google-analytics.com/ga.js"
+            ).promise();
+        }
+        
+        return loadPromise;
+    };
     
     // add push methods to the Analytics prototype
     array.each(pushMethods, function(method) {
@@ -236,6 +253,10 @@
         
         return function() {
             
+            // make sure GA has loaded
+            analytics.load();
+            
+            // set each tracker as initialized
             array.each(this.trackers, function(tracker) {
                 allTrackersSet[tracker] = true;
             });
@@ -244,23 +265,9 @@
         
     })(Analytics.prototype.setAccount);
     
-    // load Google Analytics and keep the resulting promise
-    window._gaq = window._gaq || [];
-    scriptPromise = scripts.load(
-        (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
-        ".google-analytics.com/ga.js"
-    ).promise();
-    
     // make the analytics plugin delegate to the methods
     // of an Analytics instance bound to the default tracker, ""
     lang.delegate(analytics, new Analytics([""]));
-    
-    // make the analytics plugin delegate to the methods
-    // of the promise to load the script
-    lang.delegate(analytics, scriptPromise);
-    
-    // TEMP!
-    window.scriptPromise = scriptPromise;
     
     // export the anlytics plugin
     $pt.analytics = analytics;

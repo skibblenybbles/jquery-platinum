@@ -596,6 +596,29 @@ An opaque object that wraps the GA methods bound to the specified tracker(s). Se
 discussion above for sample usage.
 
 
+### `$pt.analytics.load()`
+
+If the Google Analytics ga.js script has not yet loaded, this method loads it using `$pt.scripts.load(...)`.
+This method always returns the promise to load the ga.js script, so you can use the return value to
+monitor the loading of the ga.js script.
+
+#### Parameters
+
+None.
+
+#### Returns
+
+A promise to load the Google Analytics ga.js script.
+
+#### Examples
+
+```javascript
+$pt.analytics.load().done(function() {
+    console.log("Google Analytics has loaded.");
+});
+```
+
+
 ### `$pt.analytics.setAccount(account)`
 ### `$pt.analytics(...).setAccount(account)`
 
@@ -603,6 +626,11 @@ While these are simply methods implemented by the opaque GA wrapper object, they
 they must be called before other `$pt.analytics*` methods will work. Calling `setAccount(...)` makes
 `$pt.analytics` "aware" of a tracker name, and until it is called, any tracker methods that you call
 through `$pt.analytics*` will be ignored.
+
+When you call `setAccount(...)`, it calls `$pt.analytics.load()`, so the ga.js script will be loaded 
+on-demand as soon as you start to use `$pt.analtyics*` methods. Of course, you can always call 
+`$pt.analytics.load()` yourself, but this automatic behavior makes it unnecessary.
+
 
 #### Parameters
 
@@ -616,20 +644,3 @@ An opaque object that wraps the GA methods bound to tracker(s) specified by `$pt
 After calling `setAccount(...)`, the other methods on the opaque wrapper object will work as expected.
 See the examples in the discussion above for sample usage.
 
-
-### `$pt.analytics.always(...)`
-### `$pt.analytics.done(...)`
-### `$pt.analytics.fail(...)`
-### `$pt.analytics.pipe(...)`
-### `$pt.analytics.progress(...)`
-### `$pt.analytics.promise(...)`
-### `$pt.analytics.state(...)`
-### `$pt.analytics.then(...)`
-
-Since jquery.platinum-analytics.js loads ga.js for you, you may have a use case where you need to check
-whether GA has loaded or perform some action after it does load. The `$pt.analtyics` object delegates
-to the methods of the promise returned from the call to `$pt.scripts.load(...)` that loads ga.js. For more
-information, see jQuery's documentation on
-<a target="_blank" href="http://api.jquery.com/category/deferred-object/">Deferred objects</a> and how
-they are used with calls to 
-<code><a target="_blank" href="http://api.jquery.com/jQuery.ajax/">$.ajax()</a></code>
