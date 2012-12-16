@@ -1,5 +1,5 @@
 /**
- * @license jquery.platinum-scripts.js
+ * @license jquery.platinum-base.js
  *
  * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
@@ -48,35 +48,6 @@ var
 
 // set up noConflict()
 $pt.noConflict = noConflict;
-////////////////////////////////////////
-// source: jquery.platinum-scripts.js
-// requires: base.js
-
-// define names for the wrapping closure
-var scripts,
-    scriptsLoad;
-
-(function() {
-    
-    // the scripts plugin
-    scripts = { };
-    
-    // return a promise to load a script
-    scriptsLoad = scripts.load = function(url, options) {
-        // allow override of any option except for dataType, cache and url
-        options = $extend(options || { }, {
-            dataType: "script",
-            cache: true,
-            url: url
-        });
-        return $ajax(options);
-    };
-    
-    // export the scripts plugin
-    $pt.scripts = scripts;
-    
-})();
-
 
 ////////////////////////////////////////
 

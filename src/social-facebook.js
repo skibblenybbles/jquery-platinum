@@ -1,4 +1,4 @@
-// requires: array-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
@@ -14,27 +14,28 @@
         if (loadPromise === null) {
             
             // tell Facebook that we'll parse tags manually
-            config = $.extend(config || { }, {
+            config = $extend(config || { }, {
                 xfbml: false
             });
             
             // set up the deferred that we'll resolve
             // after Facebook has been initialized
-            deferred = new $.Deferred();
+            deferred = $Deferred();
             loadPromise = deferred.promise();
             
             // load the script and initialize
             scriptsLoad(
-                (document.location.protocol.substring(0, 4) !== "http" 
-                    ? "http:"
-                    : ""
-                ) + "//connect.facebook.net/en_US/all.js"
+                (isProtocolSecure ? protocolHttps : protocolHttp) + 
+                "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(deferred, config) {
+                
                 if (window.FB) {
+                    
                     window.FB.init(config);
                     // the script is now loaded and initialized
                     deferred.resolve();
                 }
+                
             }, deferred, config));
         }
         

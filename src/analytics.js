@@ -1,4 +1,4 @@
-// requires: array-base.js, lang.js, scripts.js
+// requires: base.js, array-base.js, lang.js, scripts.js
 
 // define names for the wrapping closure
 var analytics;
@@ -22,7 +22,7 @@ var analytics;
             // if we were passed all trackers
             if (trackers !== allTrackers) {                
                 arrayEach(trackers, function(tracker) {
-                    if (!allTrackersSet.hasOwnProperty(tracker)) {
+                    if (!tracker in allTrackersSet) {
                         allTrackers.push(tracker);
                         allTrackersSet[tracker] = false;
                     }
@@ -201,7 +201,7 @@ var analytics;
                 
                 if (typeof arg === "string") {
                     
-                    if (!trackersSet.hasOwnProperty(arg)) {
+                    if (!arg in trackersSet) {
                         trackers.push(arg);
                         trackersSet[arg] = true;
                     }
@@ -210,7 +210,7 @@ var analytics;
                     
                     arrayEach(arg, function(tracker) {
                         
-                        if (!trackersSet.hasOwnProperty(tracker)) {
+                        if (!tracker in trackersSet) {
                             trackers.push(tracker);
                             trackersSet[tracker] = true;
                         }
@@ -230,7 +230,7 @@ var analytics;
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
             loadPromise = scriptsLoad(
-                (document.location.protocol === "https:" ? "https://ssl" : "http://www") + 
+                (isProtocolSecure ? protocolHttps + "//ssl" : protocolHttp + "//www") + 
                 ".google-analytics.com/ga.js"
             ).promise();
         }

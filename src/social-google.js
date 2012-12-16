@@ -1,4 +1,4 @@
-// requires: array-base.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, scripts.js, social-base.js
 
 (function() {
     

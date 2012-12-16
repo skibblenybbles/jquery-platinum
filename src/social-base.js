@@ -1,4 +1,4 @@
-// requires: lang.js
+// requires: base.js, lang.js
 
 // define names for the wrapping closure
 var social,

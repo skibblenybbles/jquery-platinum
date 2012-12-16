@@ -7,7 +7,32 @@
 
 (function($, window, document) {
 
+////////////////////////////////////////
+// source: jquery.platinum-base.js
+// requires:
+
+// define names for the wrapping closure
 var
+    // Math's min and max
+    minimum = Math.min,
+    maximum = Math.max,
+    
+    // jQuery's Deferred
+    $Deferred = $.Deferred,
+    
+    // jQuery's $.ajax
+    $ajax = $.ajax,
+    
+    // jQuery's $.extend
+    $extend = $.extend,
+    
+    // are we using the secure protocol?
+    isProtocolSecure = document.location.protocol === "https:",
+    
+    // string names for protocols
+    protocolHttp = "http:",
+    protocolHttps = "https:",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {
@@ -17,16 +42,15 @@ var
             return $pt;
         }
     })(window.$pt),
-    
+
     // the clousure and global $pt and $.platinum values
     $pt = window.$pt = $.platinum = $.platinum || { };
 
 // set up noConflict()
 $pt.noConflict = noConflict;
-
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
-// requires: 
+// requires: base.js
 
 // define names for the wrapping closure
 var array,
@@ -70,8 +94,8 @@ var array,
         if (step > 0) {
             
             // trim the useless ends
-            start = Math.max(0, start);
-            end = Math.min(length, end);
+            start = maximum(0, start);
+            end = minimum(length, end);
             
             // iterate
             for (i = start; i < end; i += step) {
@@ -84,8 +108,8 @@ var array,
         } else {
             
             // trim the useless ends
-            start = Math.min(length - 1, start);
-            end = Math.max(-1, end);
+            start = minimum(length - 1, start);
+            end = maximum(-1, end);
             
             // iterate
             for (i = start; i > end; i += step) {
@@ -104,7 +128,7 @@ var array,
 
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
-// requires: array-base.js
+// requires: base.js, array-base.js
 
 // define names for the wrapping closure
 var lang,
@@ -117,7 +141,7 @@ var lang,
     
     var         
         // the document ready promise
-        readyPromise = new $.Deferred();
+        readyPromise = $Deferred();
     
     // set up the document ready promise
     $(document).ready(function() {
@@ -173,7 +197,7 @@ var lang,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-base.js
-// requires: lang.js
+// requires: base.js, lang.js
 
 // define names for the wrapping closure
 var social,
@@ -275,7 +299,7 @@ var social,
 
 ////////////////////////////////////////
 // source: jquery.platinum-scripts.js
-// requires: 
+// requires: base.js
 
 // define names for the wrapping closure
 var scripts,
@@ -289,12 +313,12 @@ var scripts,
     // return a promise to load a script
     scriptsLoad = scripts.load = function(url, options) {
         // allow override of any option except for dataType, cache and url
-        options = $.extend(options || { }, {
+        options = $extend(options || { }, {
             dataType: "script",
             cache: true,
             url: url
         });
-        return $.ajax(options);
+        return $ajax(options);
     };
     
     // export the scripts plugin
@@ -304,7 +328,7 @@ var scripts,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-google.js
-// requires: array-base.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, scripts.js, social-base.js
 
 (function() {
     
@@ -341,7 +365,7 @@ var scripts,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-facebook.js
-// requires: array-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
@@ -357,27 +381,28 @@ var scripts,
         if (loadPromise === null) {
             
             // tell Facebook that we'll parse tags manually
-            config = $.extend(config || { }, {
+            config = $extend(config || { }, {
                 xfbml: false
             });
             
             // set up the deferred that we'll resolve
             // after Facebook has been initialized
-            deferred = new $.Deferred();
+            deferred = $Deferred();
             loadPromise = deferred.promise();
             
             // load the script and initialize
             scriptsLoad(
-                (document.location.protocol.substring(0, 4) !== "http" 
-                    ? "http:"
-                    : ""
-                ) + "//connect.facebook.net/en_US/all.js"
+                (isProtocolSecure ? protocolHttps : protocolHttp) + 
+                "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(deferred, config) {
+                
                 if (window.FB) {
+                    
                     window.FB.init(config);
                     // the script is now loaded and initialized
                     deferred.resolve();
                 }
+                
             }, deferred, config));
         }
         

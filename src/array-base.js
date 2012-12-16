@@ -1,4 +1,4 @@
-// requires: 
+// requires: base.js
 
 // define names for the wrapping closure
 var array,
@@ -42,8 +42,8 @@ var array,
         if (step > 0) {
             
             // trim the useless ends
-            start = Math.max(0, start);
-            end = Math.min(length, end);
+            start = maximum(0, start);
+            end = minimum(length, end);
             
             // iterate
             for (i = start; i < end; i += step) {
@@ -56,8 +56,8 @@ var array,
         } else {
             
             // trim the useless ends
-            start = Math.min(length - 1, start);
-            end = Math.max(-1, end);
+            start = minimum(length - 1, start);
+            end = maximum(-1, end);
             
             // iterate
             for (i = start; i > end; i += step) {

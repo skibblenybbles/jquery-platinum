@@ -1,4 +1,4 @@
-// requires: array-base.js
+// requires: base.js, array-base.js
 
 // define names for the wrapping closure
 var lang,
@@ -11,7 +11,7 @@ var lang,
     
     var         
         // the document ready promise
-        readyPromise = new $.Deferred();
+        readyPromise = $Deferred();
     
     // set up the document ready promise
     $(document).ready(function() {

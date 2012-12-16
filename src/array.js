@@ -1,4 +1,4 @@
-// requires: array-base.js
+// requires: base.js, array-base.js
 
 // define names for the wrapping closure
 var arrayFilter,
