@@ -1,15 +1,15 @@
-// requires: base.js, array-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
     var loaders = socialLoaders,
         parsers = socialParsers,
-        network = "facebook",
-        loadPromise = null;
+        loadPromise = null,
+        parser = null;
     
-    loaders[network] = function(config) {
+    loaders.facebook = function(config) {
         
-        var deferred;
+        var ready;
         
         if (loadPromise === null) {
             
@@ -18,36 +18,39 @@
                 xfbml: false
             });
             
-            // set up the deferred that we'll resolve
-            // after Facebook has been initialized
-            deferred = $Deferred();
-            loadPromise = deferred.promise();
+            // we'll resolve this deferred when Facebook is ready to use
+            ready = $Deferred();
             
-            // load the script and initialize
+            // load the script
             scriptsLoad(
                 (isProtocolSecure ? protocolHttps : protocolHttp) + 
                 "//connect.facebook.net/en_US/all.js"
-            ).done(langPartial(function(deferred, config) {
-                
-                if (window.FB) {
-                    
-                    window.FB.init(config);
-                    // the script is now loaded and initialized
-                    deferred.resolve();
+            ).done(langPartial(function(ready, config) {
+                // intiialize Facebook with the configuration, store the 
+                // parser and trigger the ready deferred
+                var init = objectGet(window, "FB.init");
+                if (init) {                    
+                    init(config);
+                    parser = objectGet(window, "FB.XFBML.parse");
+                    if (parser) {
+                        ready.resolve();
+                    }
                 }
-                
-            }, deferred, config));
+            }, ready, config));
+            
+            // keep the promise
+            loadPromise = ready.promise();
         }
         
         return loadPromise;
     };
     
-    parsers[network] = function(node) {
+    parsers.facebook = function(node) {
         
-        if (window.FB && window.FB.XFBML) {
+        if (parser) {
             
             // parse each node in this query
-            arrayEach(this, window.FB.XFBML.parse);
+            arrayEach(this, parser);
         }
     };
 

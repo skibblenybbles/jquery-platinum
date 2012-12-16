@@ -74,7 +74,7 @@ var analytics;
                     var args = array(arguments, 1),
                         commands = [];
                     
-                    if (typeof callback !== "function") {
+                    if (!isFunction(callback)) {
                         return;
                     }
                     
@@ -199,14 +199,14 @@ var analytics;
             // each passed argument may be a string or Array
             arrayEach(arguments, function(arg) {
                 
-                if (typeof arg === "string" || arg instanceof String) {
+                if (isString(arg)) {
                     
                     if (!trackersSet.hasOwnProperty(arg)) {
                         trackers.push(arg);
                         trackersSet[arg] = true;
                     }
                     
-                } else if (arg instanceof Array) {
+                } else if (isArray(arg)) {
                     
                     arrayEach(arg, function(tracker) {
                         

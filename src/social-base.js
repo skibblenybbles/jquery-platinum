@@ -75,7 +75,7 @@ var social,
         if (parse && loadPromise) {
             
             parse = lang.hitch(this, parse);
-            done = typeof done === "function" ? langHitch(this, done) : null;
+            done = isFunction(done) ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
             $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {

@@ -15,11 +15,29 @@
 var
     // JavaScript's objects
     Array = window.Array,
+    Boolean = window.Boolean,
     Object = window.Object,
     Math = window.Math,
     Number = window.Number,
     String = window.String,
     undefined,
+    
+    // simpler type checkers than jQuery's
+    // these are used to determine argument types and are not necessarily as
+    // efficient as inline code, but they guarantee type-checking consistency
+    // and reduce the minified output slightly
+    isArray = function(obj) {
+        return obj instanceof Array;
+    },
+    isFunction = function(obj) {
+        return typeof obj === "function";
+    },
+    isNumber = function(obj) {
+        return typeof obj === "number" || obj instanceof Number;
+    },
+    isString = function(obj) {
+        return typeof obj === "string" || obj instanceof String;
+    },
     
     // jQuery's objects and methods
     $Deferred = $.Deferred,
@@ -77,14 +95,14 @@ var array,
             value,
             length = iterable.length,
             step = step || 1;
-            start = typeof start !== _number_ && !(start instanceof Number)
+            start = !isNumber(start)
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = typeof end !== _number_ && !(end instanceof Number)
+            end = !isNumber(end)
                 ? step > 0
                     ? length
                     : -1

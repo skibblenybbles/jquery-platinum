@@ -15,11 +15,29 @@
 var
     // JavaScript's objects
     Array = window.Array,
+    Boolean = window.Boolean,
     Object = window.Object,
     Math = window.Math,
     Number = window.Number,
     String = window.String,
     undefined,
+    
+    // simpler type checkers than jQuery's
+    // these are used to determine argument types and are not necessarily as
+    // efficient as inline code, but they guarantee type-checking consistency
+    // and reduce the minified output slightly
+    isArray = function(obj) {
+        return obj instanceof Array;
+    },
+    isFunction = function(obj) {
+        return typeof obj === "function";
+    },
+    isNumber = function(obj) {
+        return typeof obj === "number" || obj instanceof Number;
+    },
+    isString = function(obj) {
+        return typeof obj === "string" || obj instanceof String;
+    },
     
     // jQuery's objects and methods
     $Deferred = $.Deferred,
@@ -77,14 +95,14 @@ var array,
             value,
             length = iterable.length,
             step = step || 1;
-            start = typeof start !== _number_ && !(start instanceof Number)
+            start = !isNumber(start)
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = typeof end !== _number_ && !(end instanceof Number)
+            end = !isNumber(end)
                 ? step > 0
                     ? length
                     : -1
@@ -178,7 +196,7 @@ var lang,
         var name;
         for (name in source) {
             if (!(name in target) &&
-                typeof source[name] === _function_ &&
+                isFunction(source[name]) &&
                 name !== "constructor"
             ) {
                 target[name] = lang.hitch(source, source[name]);
@@ -303,7 +321,7 @@ var analytics;
                     var args = array(arguments, 1),
                         commands = [];
                     
-                    if (typeof callback !== "function") {
+                    if (!isFunction(callback)) {
                         return;
                     }
                     
@@ -428,14 +446,14 @@ var analytics;
             // each passed argument may be a string or Array
             arrayEach(arguments, function(arg) {
                 
-                if (typeof arg === _string_ || arg instanceof String) {
+                if (isString(arg)) {
                     
                     if (!trackersSet.hasOwnProperty(arg)) {
                         trackers.push(arg);
                         trackersSet[arg] = true;
                     }
                     
-                } else if (arg instanceof Array) {
+                } else if (isArray(arg)) {
                     
                     arrayEach(arg, function(tracker) {
                         
@@ -618,6 +636,69 @@ var arrayFilter,
 })();
 
 ////////////////////////////////////////
+// source: jquery.platinum-object-base.js
+// requires: base.js, array-base.js, lang.js
+
+// define names for the wrapping closure
+var object,
+    objectExists,
+    objectGet,
+    objectEach;
+
+(function() {
+    
+    // the object plugin
+    object = { };
+    
+    // does the dotted string name exist in the given object?
+    objectExists = object.exists = function(obj, path) {
+        var found = false;
+        arrayEach(path.split("."), function(name) {
+            found = name in obj;
+            obj = obj[name];
+            return found;
+        });
+        return found;
+    };
+    
+    // get the dotted string name from the given object,
+    // being careful to keep a function in the final position
+    // bound to its owner
+    objectGet = object.get = function(obj, path) {
+        var found = false,
+            owner;
+        arrayEach(path.split("."), function(name) {
+            found = name in obj;
+            owner = obj;
+            obj = obj[name];
+            return found;
+        });
+        return found
+            ? isFunction(obj)
+                ? langHitch(owner, obj)
+                : obj
+            : undefined;
+    };
+    
+    // call a function that accepts two arguments for key
+    // and value for each property in an object, with a
+    // choice to optionally filter out the properties for which
+    // obj.hasOwnProperty() is false
+    objectEach = object.each = function(obj, owns, fn) {
+        var key;
+        for (key in obj) {
+            if (!owns || obj.hasOwnProperty(key)) {
+                fn(key, obj[key]);
+            }
+        }
+    };
+    
+    // export the object plugin
+    $pt.object = object;
+    
+})();
+
+////////////////////////////////////////
 // source: jquery.platinum-social-base.js
 // requires: base.js, lang.js
 
@@ -663,7 +744,7 @@ var social,
         }
         
         // do we need to load and configure the network?
-        if (!network in loadPromises) {
+        if (!loadPromises.hasOwnProperty(network)) {
             loadPromises[network] = loader(config);
         }
         return loadPromises[network];
@@ -696,7 +777,7 @@ var social,
         if (parse && loadPromise) {
             
             parse = lang.hitch(this, parse);
-            done = typeof done === _function_ ? langHitch(this, done) : null;
+            done = isFunction(done) ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
             $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {
@@ -721,16 +802,18 @@ var social,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-google.js
-// requires: base.js, array-base.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
     var loaders = socialLoaders,
         parsers = socialParsers,
-        network = "google",
-        loadPromise = null;
+        loadPromise = null,
+        parser = null;
     
-    loaders[network] = function(config) {
+    loaders.google = function(config) {
+        
+        var ready;
         
         if (loadPromise === null) {
             
@@ -739,18 +822,32 @@ var social,
                 parsetags: "explicit"
             };
             
+            // we'll resolve this deferred when Google+ is ready to use
+            ready = $Deferred();
+            
             // load the script
-            loadPromise = scriptsLoad("https://apis.google.com/js/plusone.js").promise();
+            scriptsLoad(
+                "https://apis.google.com/js/plusone.js"
+            ).done(langPartial(function(ready) {
+                // store the parser and trigger the ready deferred
+                parser = objectGet(window, "gapi.plusone.go");
+                if (parser) {
+                    ready.resolve();
+                }
+            }, ready));
+            
+            // keep the promise
+            loadPromise = ready.promise();
         }
         return loadPromise;
     };
     
-    parsers[network] = function() {
+    parsers.google = function() {
         
-        if (window.gapi && window.gapi.plusone) {
+        if (parser) {
             
             // parse each node in this query
-            arrayEach(this, window.gapi.plusone.go);
+            arrayEach(this, parser);
         }
     };
 
@@ -758,18 +855,18 @@ var social,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-facebook.js
-// requires: base.js, array-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
     var loaders = socialLoaders,
         parsers = socialParsers,
-        network = "facebook",
-        loadPromise = null;
+        loadPromise = null,
+        parser = null;
     
-    loaders[network] = function(config) {
+    loaders.facebook = function(config) {
         
-        var deferred;
+        var ready;
         
         if (loadPromise === null) {
             
@@ -778,36 +875,39 @@ var social,
                 xfbml: false
             });
             
-            // set up the deferred that we'll resolve
-            // after Facebook has been initialized
-            deferred = $Deferred();
-            loadPromise = deferred.promise();
+            // we'll resolve this deferred when Facebook is ready to use
+            ready = $Deferred();
             
-            // load the script and initialize
+            // load the script
             scriptsLoad(
                 (isProtocolSecure ? protocolHttps : protocolHttp) + 
                 "//connect.facebook.net/en_US/all.js"
-            ).done(langPartial(function(deferred, config) {
-                
-                if (window.FB) {
-                    
-                    window.FB.init(config);
-                    // the script is now loaded and initialized
-                    deferred.resolve();
+            ).done(langPartial(function(ready, config) {
+                // intiialize Facebook with the configuration, store the 
+                // parser and trigger the ready deferred
+                var init = objectGet(window, "FB.init");
+                if (init) {                    
+                    init(config);
+                    parser = objectGet(window, "FB.XFBML.parse");
+                    if (parser) {
+                        ready.resolve();
+                    }
                 }
-                
-            }, deferred, config));
+            }, ready, config));
+            
+            // keep the promise
+            loadPromise = ready.promise();
         }
         
         return loadPromise;
     };
     
-    parsers[network] = function(node) {
+    parsers.facebook = function(node) {
         
-        if (window.FB && window.FB.XFBML) {
+        if (parser) {
             
             // parse each node in this query
-            arrayEach(this, window.FB.XFBML.parse);
+            arrayEach(this, parser);
         }
     };
 
@@ -820,7 +920,7 @@ var social,
 
 ////////////////////////////////////////
 // source: jquery.platinum-platinum.js
-// requires: analytics.js, array.js, lang.js, scripts.js, social.js
+// requires: analytics.js, array.js, lang.js, object-base.js, scripts.js, social.js
 // requires all of the dependencies to build the full jquery.platinum.js suite
 
 

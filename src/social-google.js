@@ -1,13 +1,15 @@
-// requires: base.js, array-base.js, scripts.js, social-base.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
     
     var loaders = socialLoaders,
         parsers = socialParsers,
-        network = "google",
-        loadPromise = null;
+        loadPromise = null,
+        parser = null;
     
-    loaders[network] = function(config) {
+    loaders.google = function(config) {
+        
+        var ready;
         
         if (loadPromise === null) {
             
@@ -16,18 +18,32 @@
                 parsetags: "explicit"
             };
             
+            // we'll resolve this deferred when Google+ is ready to use
+            ready = $Deferred();
+            
             // load the script
-            loadPromise = scriptsLoad("https://apis.google.com/js/plusone.js").promise();
+            scriptsLoad(
+                "https://apis.google.com/js/plusone.js"
+            ).done(langPartial(function(ready) {
+                // store the parser and trigger the ready deferred
+                parser = objectGet(window, "gapi.plusone.go");
+                if (parser) {
+                    ready.resolve();
+                }
+            }, ready));
+            
+            // keep the promise
+            loadPromise = ready.promise();
         }
         return loadPromise;
     };
     
-    parsers[network] = function() {
+    parsers.google = function() {
         
-        if (window.gapi && window.gapi.plusone) {
+        if (parser) {
             
             // parse each node in this query
-            arrayEach(this, window.gapi.plusone.go);
+            arrayEach(this, parser);
         }
     };
 

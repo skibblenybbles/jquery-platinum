@@ -47,7 +47,7 @@ var lang,
         var name;
         for (name in source) {
             if (!(name in target) &&
-                typeof source[name] === "function" &&
+                isFunction(source[name]) &&
                 name !== "constructor"
             ) {
                 target[name] = lang.hitch(source, source[name]);

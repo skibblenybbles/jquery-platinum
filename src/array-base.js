@@ -24,14 +24,14 @@ var array,
             value,
             length = iterable.length,
             step = step || 1;
-            start = typeof start !== "number" && !(start instanceof Number)
+            start = !isNumber(start)
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = typeof end !== "number" && !(end instanceof Number)
+            end = !isNumber(end)
                 ? step > 0
                     ? length
                     : -1
