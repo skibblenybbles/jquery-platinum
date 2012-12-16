@@ -11,19 +11,19 @@
 // source: jquery.platinum-base.js
 // requires:
 
-// define names for the wrapping closure
+// define "shortcut" names for the wrapping closure
 var
-    // Math's min and max
-    minimum = Math.min,
-    maximum = Math.max,
+    // JavaScript's objects
+    Array = window.Array,
+    Object = window.Object,
+    Math = window.Math,
+    Number = window.Number,
+    String = window.String,
+    undefined,
     
-    // jQuery's Deferred
+    // jQuery's objects and methods
     $Deferred = $.Deferred,
-    
-    // jQuery's $.ajax
     $ajax = $.ajax,
-    
-    // jQuery's $.extend
     $extend = $.extend,
     
     // are we using the secure protocol?
@@ -48,6 +48,7 @@ var
 
 // set up noConflict()
 $pt.noConflict = noConflict;
+
 ////////////////////////////////////////
 // source: jquery.platinum-array-base.js
 // requires: base.js
@@ -76,14 +77,14 @@ var array,
             value,
             length = iterable.length,
             step = step || 1;
-            start = typeof start !== "number"
+            start = typeof start !== _number_ && !(start instanceof Number)
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = typeof end !== "number"
+            end = typeof end !== _number_ && !(end instanceof Number)
                 ? step > 0
                     ? length
                     : -1
@@ -94,8 +95,8 @@ var array,
         if (step > 0) {
             
             // trim the useless ends
-            start = maximum(0, start);
-            end = minimum(length, end);
+            start = Math.max(0, start);
+            end = Math.min(length, end);
             
             // iterate
             for (i = start; i < end; i += step) {
@@ -108,8 +109,8 @@ var array,
         } else {
             
             // trim the useless ends
-            start = minimum(length - 1, start);
-            end = maximum(-1, end);
+            start = Math.min(length - 1, start);
+            end = Math.max(-1, end);
             
             // iterate
             for (i = start; i > end; i += step) {
@@ -176,9 +177,9 @@ var lang,
     langDelegate = lang.delegate = function(target, source) {
         var name;
         for (name in source) {
-            if (typeof source[name] === "function" &&
-                name !== "constructor" &&
-                !(name in target)
+            if (!(name in target) &&
+                typeof source[name] === _function_ &&
+                name !== "constructor"
             ) {
                 target[name] = lang.hitch(source, source[name]);
             }
@@ -274,7 +275,7 @@ var social,
         if (parse && loadPromise) {
             
             parse = lang.hitch(this, parse);
-            done = typeof done === "function" ? langHitch(this, done) : null;
+            done = typeof done === _function_ ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
             $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {

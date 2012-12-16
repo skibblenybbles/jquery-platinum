@@ -22,7 +22,7 @@ var analytics;
             // if we were passed all trackers
             if (trackers !== allTrackers) {                
                 arrayEach(trackers, function(tracker) {
-                    if (!tracker in allTrackersSet) {
+                    if (!allTrackersSet.hasOwnProperty(tracker)) {
                         allTrackers.push(tracker);
                         allTrackersSet[tracker] = false;
                     }
@@ -199,18 +199,18 @@ var analytics;
             // each passed argument may be a string or Array
             arrayEach(arguments, function(arg) {
                 
-                if (typeof arg === "string") {
+                if (typeof arg === "string" || arg instanceof String) {
                     
-                    if (!arg in trackersSet) {
+                    if (!trackersSet.hasOwnProperty(arg)) {
                         trackers.push(arg);
                         trackersSet[arg] = true;
                     }
                     
-                } else if ($.isArray(arg)) {
+                } else if (arg instanceof Array) {
                     
                     arrayEach(arg, function(tracker) {
                         
-                        if (!tracker in trackersSet) {
+                        if (!trackersSet.hasOwnProperty(tracker)) {
                             trackers.push(tracker);
                             trackersSet[tracker] = true;
                         }

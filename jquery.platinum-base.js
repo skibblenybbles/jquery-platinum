@@ -11,19 +11,19 @@
 // source: jquery.platinum-base.js
 // requires:
 
-// define names for the wrapping closure
+// define "shortcut" names for the wrapping closure
 var
-    // Math's min and max
-    minimum = Math.min,
-    maximum = Math.max,
+    // JavaScript's objects
+    Array = window.Array,
+    Object = window.Object,
+    Math = window.Math,
+    Number = window.Number,
+    String = window.String,
+    undefined,
     
-    // jQuery's Deferred
+    // jQuery's objects and methods
     $Deferred = $.Deferred,
-    
-    // jQuery's $.ajax
     $ajax = $.ajax,
-    
-    // jQuery's $.extend
     $extend = $.extend,
     
     // are we using the secure protocol?
@@ -48,6 +48,7 @@ var
 
 // set up noConflict()
 $pt.noConflict = noConflict;
+
 
 ////////////////////////////////////////
 

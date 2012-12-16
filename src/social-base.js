@@ -42,7 +42,7 @@ var social,
         }
         
         // do we need to load and configure the network?
-        if (!network in loadPromises) {
+        if (!loadPromises.hasOwnProperty(network)) {
             loadPromises[network] = loader(config);
         }
         return loadPromises[network];

@@ -24,14 +24,14 @@ var array,
             value,
             length = iterable.length,
             step = step || 1;
-            start = typeof start !== "number"
+            start = typeof start !== "number" && !(start instanceof Number)
                 ? step > 0
                     ? 0
                     : length -1
                 : start < 0
                     ? start + length
                     : start,
-            end = typeof end !== "number"
+            end = typeof end !== "number" && !(end instanceof Number)
                 ? step > 0
                     ? length
                     : -1
@@ -42,8 +42,8 @@ var array,
         if (step > 0) {
             
             // trim the useless ends
-            start = maximum(0, start);
-            end = minimum(length, end);
+            start = Math.max(0, start);
+            end = Math.min(length, end);
             
             // iterate
             for (i = start; i < end; i += step) {
@@ -56,8 +56,8 @@ var array,
         } else {
             
             // trim the useless ends
-            start = minimum(length - 1, start);
-            end = maximum(-1, end);
+            start = Math.min(length - 1, start);
+            end = Math.max(-1, end);
             
             // iterate
             for (i = start; i > end; i += step) {

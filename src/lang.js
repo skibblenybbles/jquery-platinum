@@ -46,9 +46,9 @@ var lang,
     langDelegate = lang.delegate = function(target, source) {
         var name;
         for (name in source) {
-            if (typeof source[name] === "function" &&
-                name !== "constructor" &&
-                !(name in target)
+            if (!(name in target) &&
+                typeof source[name] === "function" &&
+                name !== "constructor"
             ) {
                 target[name] = lang.hitch(source, source[name]);
             }
