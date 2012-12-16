@@ -18,9 +18,9 @@
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//connect.facebook.net/en_US/all.js"
+                urlScheme + "connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
+                
                 var init = objectGet(window, "FB.init");
                 if (init) {
                     

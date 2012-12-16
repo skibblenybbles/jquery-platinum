@@ -47,6 +47,9 @@ var
     // are we using the secure protocol?
     secureProtocol = document.location.protocol === "https:",
     
+    // the URL scheme to use for generated URL strings
+    urlScheme = "http" + (secureProtocol ? "s" : "") + "://",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {
@@ -431,8 +434,7 @@ var social,
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//platform.linkedin.com/in.js?async=true"
+                urlScheme + "platform.linkedin.com/in.js?async=true"
             ).done(langPartial(function(ready, config) {
                 
                 var init = objectGet(window, "IN.init"),

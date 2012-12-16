@@ -47,6 +47,9 @@ var
     // are we using the secure protocol?
     secureProtocol = document.location.protocol === "https:",
     
+    // the URL scheme to use for generated URL strings
+    urlScheme = "http" + (secureProtocol ? "s" : "") + "://",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {
@@ -426,9 +429,9 @@ var social,
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//platform.twitter.com/widgets.js"
+                urlScheme + "platform.twitter.com/widgets.js"
             ).done(langPartial(function(ready) {
+                
                 // store the parser and trigger the ready deferred
                 parser = objectGet(window, "twttr.widgets.load");
                 if (parser) {

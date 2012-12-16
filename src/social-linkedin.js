@@ -23,8 +23,7 @@
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//platform.linkedin.com/in.js?async=true"
+                urlScheme + "platform.linkedin.com/in.js?async=true"
             ).done(langPartial(function(ready, config) {
                 
                 var init = objectGet(window, "IN.init"),

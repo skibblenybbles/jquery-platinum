@@ -47,6 +47,9 @@ var
     // are we using the secure protocol?
     secureProtocol = document.location.protocol === "https:",
     
+    // the URL scheme to use for generated URL strings
+    urlScheme = "http" + (secureProtocol ? "s" : "") + "://",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {
@@ -473,8 +476,7 @@ var analytics;
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
             loadPromise = scriptsLoad(
-                (secureProtocol ? "https://ssl" : "http://www") + 
-                ".google-analytics.com/ga.js"
+                urlScheme + (secureProtocol ? "ssl" : "www") + ".google-analytics.com/ga.js"
             ).promise();
         }
         

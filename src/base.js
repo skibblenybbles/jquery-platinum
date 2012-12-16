@@ -36,6 +36,9 @@ var
     // are we using the secure protocol?
     secureProtocol = document.location.protocol === "https:",
     
+    // the URL scheme to use for generated URL strings
+    urlScheme = "http" + (secureProtocol ? "s" : "") + "://",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {

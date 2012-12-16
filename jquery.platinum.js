@@ -47,6 +47,9 @@ var
     // are we using the secure protocol?
     secureProtocol = document.location.protocol === "https:",
     
+    // the URL scheme to use for generated URL strings
+    urlScheme = "http" + (secureProtocol ? "s" : "") + "://",
+    
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
     noConflict = (function(pt) {
@@ -473,8 +476,7 @@ var analytics;
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
             loadPromise = scriptsLoad(
-                (secureProtocol ? "https://ssl" : "http://www") + 
-                ".google-analytics.com/ga.js"
+                urlScheme + (secureProtocol ? "ssl" : "www") + ".google-analytics.com/ga.js"
             ).promise();
         }
         
@@ -871,9 +873,9 @@ var social,
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//connect.facebook.net/en_US/all.js"
+                urlScheme + "connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
+                
                 var init = objectGet(window, "FB.init");
                 if (init) {
                     
@@ -932,9 +934,9 @@ var social,
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//platform.twitter.com/widgets.js"
+                urlScheme + "platform.twitter.com/widgets.js"
             ).done(langPartial(function(ready) {
+                
                 // store the parser and trigger the ready deferred
                 parser = objectGet(window, "twttr.widgets.load");
                 if (parser) {
@@ -988,8 +990,7 @@ var social,
             
             // load the script
             scriptsLoad(
-                (secureProtocol ? "https:" : "http:") +
-                "//platform.linkedin.com/in.js?async=true"
+                urlScheme + "platform.linkedin.com/in.js?async=true"
             ).done(langPartial(function(ready, config) {
                 
                 var init = objectGet(window, "IN.init"),
