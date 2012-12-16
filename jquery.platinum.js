@@ -993,7 +993,7 @@ var social,
             ).done(langPartial(function(ready, config) {
                 
                 var init = objectGet(window, "IN.init"),
-                    readyCallback = "___linkedinready";
+                    readyCallback = "___in";
                 
                 if (init) {
                     
