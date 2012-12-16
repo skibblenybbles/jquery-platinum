@@ -10,9 +10,8 @@ var analytics;
         allTrackers = [],
         
         // all known trackers mapped to a boolean indicating whether
-        // "setAccount" has been called for the tracker
-        // commands sent to a tracker will be ignored until "setAccount"
-        // is called
+        // "setAccount" has been called for the tracker commands sent 
+        // to a tracker will be ignored until "setAccount" is called
         allTrackersSet = { },
         
         // the Analytics constructor
@@ -122,7 +121,6 @@ var analytics;
             "clearOrganic",
             "cookiePathCopy",
             "deleteCustomVar",
-            "getName",
             "setAccount",
             "link",
             "linkByPost",
@@ -168,6 +166,7 @@ var analytics;
             "getDetectTitle",
             "getLinkerUrl",
             "getLocalGifPath",
+            "getName",
             "getServiceMode",
             "getVersion",
             "getVisitorCustomVar"
