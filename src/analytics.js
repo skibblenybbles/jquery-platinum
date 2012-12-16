@@ -230,7 +230,7 @@ var analytics;
             // initialize the Google Analytics command queue and load ga.js
             window._gaq = window._gaq || [];
             loadPromise = scriptsLoad(
-                (isProtocolSecure ? protocolHttps + "//ssl" : protocolHttp + "//www") + 
+                (secureProtocol ? "https://ssl" : "http://www") + 
                 ".google-analytics.com/ga.js"
             ).promise();
         }

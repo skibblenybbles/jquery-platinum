@@ -34,11 +34,7 @@ var
     $extend = $.extend,
     
     // are we using the secure protocol?
-    isProtocolSecure = document.location.protocol === "https:",
-    
-    // string names for protocols
-    protocolHttp = "http:",
-    protocolHttps = "https:",
+    secureProtocol = document.location.protocol === "https:",
     
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum

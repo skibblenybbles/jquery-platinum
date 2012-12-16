@@ -23,7 +23,7 @@
             
             // load the script
             scriptsLoad(
-                (isProtocolSecure ? protocolHttps : protocolHttp) + 
+                (secureProtocol ? "https:" : "http:") +
                 "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
                 // intiialize Facebook with the configuration, store the 

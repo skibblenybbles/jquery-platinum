@@ -45,11 +45,7 @@ var
     $extend = $.extend,
     
     // are we using the secure protocol?
-    isProtocolSecure = document.location.protocol === "https:",
-    
-    // string names for protocols
-    protocolHttp = "http:",
-    protocolHttps = "https:",
+    secureProtocol = document.location.protocol === "https:",
     
     // a function for resolving conflicts with the global $pt variable name
     // restores the previous $pt variable and returns $.platinum
@@ -488,7 +484,7 @@ var scripts,
             
             // load the script
             scriptsLoad(
-                (isProtocolSecure ? protocolHttps : protocolHttp) + 
+                (secureProtocol ? "https:" : "http:") +
                 "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
                 // intiialize Facebook with the configuration, store the 
