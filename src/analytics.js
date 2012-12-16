@@ -32,6 +32,9 @@ var analytics;
             this.trackers = trackers;
         },
         
+        // the Analytics prototype to be populated below
+        AnalyticsPrototype = { },
+        
         // creates a method wrapper for the Analytics prototype 
         // that implements one of the push methods
         wrapPushMethod = function(method) {
@@ -242,17 +245,17 @@ var analytics;
     
     // add push methods to the Analytics prototype
     arrayEach(pushMethods, function(method) {
-        Analytics.prototype[method] = wrapPushMethod(method);
+        AnalyticsPrototype[method] = wrapPushMethod(method);
     });
     
     // add callback methods to the Analytics prototype
     arrayEach(callbackMethods, function(method) {
-        Analytics.prototype[method] = wrapCallbackMethod(method);
+        AnalyticsPrototype[method] = wrapCallbackMethod(method);
     });
     
     // override setAccount so that we can keep track
     // of which trackers are properly initialized
-    Analytics.prototype.setAccount = (function(setAccount) {
+    AnalyticsPrototype.setAccount = (function(setAccount) {
         
         return function() {
             
@@ -266,7 +269,10 @@ var analytics;
             return setAccount.apply(this, array(arguments));
         };
         
-    })(Analytics.prototype.setAccount);
+    })(AnalyticsPrototype.setAccount);
+    
+    // set the Analytics prototype
+    Analytics.prototype = AnalyticsPrototype;
     
     // make the analytics plugin delegate to the methods
     // of an Analytics instance bound to the default tracker, ""

@@ -173,7 +173,7 @@ var lang,
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-base.js
-// requires: array-base.js, lang.js
+// requires: lang.js
 
 // define names for the wrapping closure
 var social,
@@ -187,12 +187,15 @@ var social,
         loadPromises = { },
         
         // parser methods will be stored here for each social button network
-        // each parser method accepts a single DOM node to parse
+        // each parser method will be called with its "this" set to a
+        // jQuery DOM query
         parsers = { },
         
         // loader methods will be stored here for each social button network
         // each loader accepts a config object with options relevant for
         // its network, e.g. Facebook needs an "appId" in its options
+        // each loader method should return a promise to load its social
+        // button network
         loaders = { };
     
     // export the social plugin for the wrapping closure
@@ -240,30 +243,26 @@ var social,
     //      callback (defaults to 500)
     $.fn.social = function(network, done, delay) {
         
-        var parser = parsers[network],
+        var parse = parsers[network],
             loadPromise = loadPromises[network],
             readyPromise = langReady();
         
-        if (parser && loadPromise) {
+        if (parse && loadPromise) {
             
+            parse = lang.hitch(this, parse);
             done = typeof done === "function" ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
-            $.when(loadPromise, readyPromise).done(
-                langHitch(this,
-                    function(parser, done, delay) {
-                        
-                        // parse the buttons
-                        arrayEach(this, parser);
-                        
-                        // optionally after a delay, run the callback 
-                        if (done !== null) {
-                            delay === 0 ? done() : setTimeout(done, delay);
-                        }
-                    },
-                    parser, done, delay
-                )
-            );
+            $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {
+                
+                // parse the buttons
+                parse();
+                
+                // optionally after a delay, run the callback 
+                if (done !== null) {
+                    delay === 0 ? done() : setTimeout(done, delay);
+                }
+            }, parse, done, delay));
         }
         
         return this;
@@ -275,8 +274,130 @@ var social,
 })();
 
 ////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: 
+
+// define names for the wrapping closure
+var scripts,
+    scriptsLoad;
+
+(function() {
+    
+    // the scripts plugin
+    scripts = { };
+    
+    // return a promise to load a script
+    scriptsLoad = scripts.load = function(url, options) {
+        // allow override of any option except for dataType, cache and url
+        options = $.extend(options || { }, {
+            dataType: "script",
+            cache: true,
+            url: url
+        });
+        return $.ajax(options);
+    };
+    
+    // export the scripts plugin
+    $pt.scripts = scripts;
+    
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-social-google.js
+// requires: array-base.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        network = "google",
+        loadPromise = null;
+    
+    loaders[network] = function(config) {
+        
+        if (loadPromise === null) {
+            
+            // tell Google+ that we'll parse button tags manually
+            window.___gcfg = {
+                parsetags: "explicit"
+            };
+            
+            // load the script
+            loadPromise = scriptsLoad("https://apis.google.com/js/plusone.js").promise();
+        }
+        return loadPromise;
+    };
+    
+    parsers[network] = function() {
+        
+        if (window.gapi && window.gapi.plusone) {
+            
+            // parse each node in this query
+            arrayEach(this, window.gapi.plusone.go);
+        }
+    };
+
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-social-facebook.js
+// requires: array-base.js, lang.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        network = "facebook",
+        loadPromise = null;
+    
+    loaders[network] = function(config) {
+        
+        var deferred;
+        
+        if (loadPromise === null) {
+            
+            // tell Facebook that we'll parse tags manually
+            config = $.extend(config || { }, {
+                xfbml: false
+            });
+            
+            // set up the deferred that we'll resolve
+            // after Facebook has been initialized
+            deferred = new $.Deferred();
+            loadPromise = deferred.promise();
+            
+            // load the script and initialize
+            scriptsLoad(
+                (document.location.protocol.substring(0, 4) !== "http" 
+                    ? "http:"
+                    : ""
+                ) + "//connect.facebook.net/en_US/all.js"
+            ).done(langPartial(function(deferred, config) {
+                if (window.FB) {
+                    window.FB.init(config);
+                    // the script is now loaded and initialized
+                    deferred.resolve();
+                }
+            }, deferred, config));
+        }
+        
+        return loadPromise;
+    };
+    
+    parsers[network] = function(node) {
+        
+        if (window.FB && window.FB.XFBML) {
+            
+            // parse each node in this query
+            arrayEach(this, window.FB.XFBML.parse);
+        }
+    };
+
+})();
+
+////////////////////////////////////////
 // source: jquery.platinum-social.js
-// requires: social-base.js
+// requires: social-base.js, social-google.js, social-facebook.js
 // requires all of the dependencies to build the full jquery.platinum-social.js suite
 
 

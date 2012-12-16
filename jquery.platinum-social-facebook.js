@@ -1,5 +1,5 @@
 /**
- * @license jquery.platinum-social-base.js
+ * @license jquery.platinum-social-facebook.js
  *
  * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
@@ -172,6 +172,35 @@ var lang,
 })();
 
 ////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: 
+
+// define names for the wrapping closure
+var scripts,
+    scriptsLoad;
+
+(function() {
+    
+    // the scripts plugin
+    scripts = { };
+    
+    // return a promise to load a script
+    scriptsLoad = scripts.load = function(url, options) {
+        // allow override of any option except for dataType, cache and url
+        options = $.extend(options || { }, {
+            dataType: "script",
+            cache: true,
+            url: url
+        });
+        return $.ajax(options);
+    };
+    
+    // export the scripts plugin
+    $pt.scripts = scripts;
+    
+})();
+
+////////////////////////////////////////
 // source: jquery.platinum-social-base.js
 // requires: lang.js
 
@@ -271,6 +300,62 @@ var social,
     // export the social plugin
     $pt.social = social;
     
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-social-facebook.js
+// requires: array-base.js, lang.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        network = "facebook",
+        loadPromise = null;
+    
+    loaders[network] = function(config) {
+        
+        var deferred;
+        
+        if (loadPromise === null) {
+            
+            // tell Facebook that we'll parse tags manually
+            config = $.extend(config || { }, {
+                xfbml: false
+            });
+            
+            // set up the deferred that we'll resolve
+            // after Facebook has been initialized
+            deferred = new $.Deferred();
+            loadPromise = deferred.promise();
+            
+            // load the script and initialize
+            scriptsLoad(
+                (document.location.protocol.substring(0, 4) !== "http" 
+                    ? "http:"
+                    : ""
+                ) + "//connect.facebook.net/en_US/all.js"
+            ).done(langPartial(function(deferred, config) {
+                if (window.FB) {
+                    window.FB.init(config);
+                    // the script is now loaded and initialized
+                    deferred.resolve();
+                }
+            }, deferred, config));
+        }
+        
+        return loadPromise;
+    };
+    
+    parsers[network] = function(node) {
+        
+        if (window.FB && window.FB.XFBML) {
+            
+            // parse each node in this query
+            arrayEach(this, window.FB.XFBML.parse);
+        }
+    };
+
 })();
 
 

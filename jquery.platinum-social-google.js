@@ -1,5 +1,5 @@
 /**
- * @license jquery.platinum-social-base.js
+ * @license jquery.platinum-social-google.js
  *
  * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
@@ -99,6 +99,35 @@ var array,
     
     // export the array plugin
     $pt.array = array;
+    
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: 
+
+// define names for the wrapping closure
+var scripts,
+    scriptsLoad;
+
+(function() {
+    
+    // the scripts plugin
+    scripts = { };
+    
+    // return a promise to load a script
+    scriptsLoad = scripts.load = function(url, options) {
+        // allow override of any option except for dataType, cache and url
+        options = $.extend(options || { }, {
+            dataType: "script",
+            cache: true,
+            url: url
+        });
+        return $.ajax(options);
+    };
+    
+    // export the scripts plugin
+    $pt.scripts = scripts;
     
 })();
 
@@ -271,6 +300,43 @@ var social,
     // export the social plugin
     $pt.social = social;
     
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-social-google.js
+// requires: array-base.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        network = "google",
+        loadPromise = null;
+    
+    loaders[network] = function(config) {
+        
+        if (loadPromise === null) {
+            
+            // tell Google+ that we'll parse button tags manually
+            window.___gcfg = {
+                parsetags: "explicit"
+            };
+            
+            // load the script
+            loadPromise = scriptsLoad("https://apis.google.com/js/plusone.js").promise();
+        }
+        return loadPromise;
+    };
+    
+    parsers[network] = function() {
+        
+        if (window.gapi && window.gapi.plusone) {
+            
+            // parse each node in this query
+            arrayEach(this, window.gapi.plusone.go);
+        }
+    };
+
 })();
 
 

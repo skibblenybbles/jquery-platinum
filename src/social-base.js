@@ -1,4 +1,4 @@
-// requires: array-base.js, lang.js
+// requires: lang.js
 
 // define names for the wrapping closure
 var social,
@@ -12,12 +12,15 @@ var social,
         loadPromises = { },
         
         // parser methods will be stored here for each social button network
-        // each parser method accepts a single DOM node to parse
+        // each parser method will be called with its "this" set to a
+        // jQuery DOM query
         parsers = { },
         
         // loader methods will be stored here for each social button network
         // each loader accepts a config object with options relevant for
         // its network, e.g. Facebook needs an "appId" in its options
+        // each loader method should return a promise to load its social
+        // button network
         loaders = { };
     
     // export the social plugin for the wrapping closure
@@ -65,30 +68,26 @@ var social,
     //      callback (defaults to 500)
     $.fn.social = function(network, done, delay) {
         
-        var parser = parsers[network],
+        var parse = parsers[network],
             loadPromise = loadPromises[network],
             readyPromise = langReady();
         
-        if (parser && loadPromise) {
+        if (parse && loadPromise) {
             
+            parse = lang.hitch(this, parse);
             done = typeof done === "function" ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
-            $.when(loadPromise, readyPromise).done(
-                langHitch(this,
-                    function(parser, done, delay) {
-                        
-                        // parse the buttons
-                        arrayEach(this, parser);
-                        
-                        // optionally after a delay, run the callback 
-                        if (done !== null) {
-                            delay === 0 ? done() : setTimeout(done, delay);
-                        }
-                    },
-                    parser, done, delay
-                )
-            );
+            $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {
+                
+                // parse the buttons
+                parse();
+                
+                // optionally after a delay, run the callback 
+                if (done !== null) {
+                    delay === 0 ? done() : setTimeout(done, delay);
+                }
+            }, parse, done, delay));
         }
         
         return this;
