@@ -654,7 +654,7 @@ they must be called before other `$pt.analytics` methods will work. Calling `set
 through `$pt.analytics` will be ignored.
 
 When you call `setAccount(...)`, it calls `$pt.analytics.load()`, so the ga.js script will be loaded 
-on-demand as soon as you start to use `$pt.analtyics*` methods. Of course, you can always call 
+on-demand as soon as you start to use `$pt.analtyics` methods. Of course, you can always call 
 `$pt.analytics.load()` yourself, but this automatic behavior makes it unnecessary.
 
 

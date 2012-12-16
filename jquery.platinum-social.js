@@ -474,11 +474,6 @@ var scripts,
         
         if (loadPromise === null) {
             
-            // tell Facebook that we'll parse tags manually
-            config = $extend(config || { }, {
-                xfbml: false
-            });
-            
             // we'll resolve this deferred when Facebook is ready to use
             ready = $Deferred();
             
@@ -487,10 +482,16 @@ var scripts,
                 (secureProtocol ? "https:" : "http:") +
                 "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
-                // intiialize Facebook with the configuration, store the 
-                // parser and trigger the ready deferred
                 var init = objectGet(window, "FB.init");
-                if (init) {                    
+                if (init) {
+                    
+                    // tell Facebook that we'll parse tags manually
+                    config = $extend(config || { }, {
+                        xfbml: false
+                    });
+                    
+                    // intiialize Facebook with the configuration, store the 
+                    // parser and trigger the ready deferred
                     init(config);
                     parser = objectGet(window, "FB.XFBML.parse");
                     if (parser) {
@@ -518,8 +519,137 @@ var scripts,
 })();
 
 ////////////////////////////////////////
+// source: jquery.platinum-social-twitter.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        loadPromise = null,
+        parser = null;
+    
+    loaders.twitter = function(config) {
+        
+        var ready;
+        
+        if (loadPromise === null) {
+            
+            // we'll resolve this deferred when Twitter is ready to use
+            ready = $Deferred();
+            
+            // load the script
+            scriptsLoad(
+                (secureProtocol ? "https:" : "http:") +
+                "//platform.twitter.com/widgets.js"
+            ).done(langPartial(function(ready) {
+                // store the parser and trigger the ready deferred
+                parser = objectGet(window, "twttr.widgets.load");
+                if (parser) {
+                    ready.resolve();
+                }
+            }, ready));
+            
+            // keep the promise
+            loadPromise = ready.promise();
+        }
+        
+        return loadPromise;
+    };
+    
+    parsers.twitter = function(node) {
+        
+        if (parser) {
+            
+            // Twitter finally allows us to pass DOM nodes to
+            // twttr.widgets.load(...)
+            arrayEach(this, parser);
+        }
+    };
+
+})();
+
+////////////////////////////////////////
+// source: jquery.platinum-social-linkedin.js
+// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+
+(function() {
+    
+    var loaders = socialLoaders,
+        parsers = socialParsers,
+        loadPromise = null,
+        parser = null;
+    
+    loaders.linkedin = function(config) {
+        
+        var ready;
+        
+        if (loadPromise === null) {
+            
+            // tell Linked in to prompt users for authorization
+            config = $extend(config || { }, {
+                authorize: true
+            });
+            
+            // we'll resolve this deferred when LinkedIn is ready to use
+            ready = $Deferred();
+            
+            // load the script
+            scriptsLoad(
+                (secureProtocol ? "https:" : "http:") +
+                "//platform.linkedin.com/in.js?async=true"
+            ).done(langPartial(function(ready, config) {
+                
+                var init = objectGet(window, "IN.init"),
+                    readyCallback = "___linkedinready";
+                
+                if (init) {
+                    
+                    // tell LinkedIn to prompt users for authorization
+                    // and set the name for the global LinkedIn ready callback
+                    config = $extend(config || { }, {
+                        authorize: true,
+                        onLoad: readyCallback
+                    });
+                    
+                    // set up the global LinkedIn ready callback
+                    window[readyCallback] = langPartial(function(ready) {
+                        // store the parser, trigger the ready deferred
+                        // and clean up the nasty global
+                        parser = objectGet(window, "IN.parse");
+                        if (parser) {
+                            ready.resolve();
+                        }
+                        delete window[readyCallback];
+                    }, ready);
+                    
+                    // intiialize LinkedIn with the configuration
+                    init(config);
+                }
+                
+            }, ready, config));
+            
+            // keep the promise
+            loadPromise = ready.promise();
+        }
+        
+        return loadPromise;
+    };
+    
+    parsers.linkedin = function(node) {
+        
+        if (parser) {
+            
+            // parse each node in this query
+            arrayEach(this, parser);
+        }
+    };
+
+})();
+
+////////////////////////////////////////
 // source: jquery.platinum-social.js
-// requires: social-base.js, social-google.js, social-facebook.js
+// requires: social-base.js, social-google.js, social-facebook.js, social-twitter.js, social-linkedin.js
 // requires all of the dependencies to build the full jquery.platinum-social.js suite
 
 

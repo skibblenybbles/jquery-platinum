@@ -1,5 +1,5 @@
 /**
- * @license jquery.platinum-social-facebook.js
+ * @license jquery.platinum-social-twitter.js
  *
  * Copyright (C) 2012 Mike Kibbel, MetaMetrics, Inc.
  * https://raw.github.com/skibblenybbles/jquery-platinum/master/src/LICENSE
@@ -405,7 +405,7 @@ var social,
 })();
 
 ////////////////////////////////////////
-// source: jquery.platinum-social-facebook.js
+// source: jquery.platinum-social-twitter.js
 // requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
 
 (function() {
@@ -415,37 +415,26 @@ var social,
         loadPromise = null,
         parser = null;
     
-    loaders.facebook = function(config) {
+    loaders.twitter = function(config) {
         
         var ready;
         
         if (loadPromise === null) {
             
-            // we'll resolve this deferred when Facebook is ready to use
+            // we'll resolve this deferred when Twitter is ready to use
             ready = $Deferred();
             
             // load the script
             scriptsLoad(
                 (secureProtocol ? "https:" : "http:") +
-                "//connect.facebook.net/en_US/all.js"
-            ).done(langPartial(function(ready, config) {
-                var init = objectGet(window, "FB.init");
-                if (init) {
-                    
-                    // tell Facebook that we'll parse tags manually
-                    config = $extend(config || { }, {
-                        xfbml: false
-                    });
-                    
-                    // intiialize Facebook with the configuration, store the 
-                    // parser and trigger the ready deferred
-                    init(config);
-                    parser = objectGet(window, "FB.XFBML.parse");
-                    if (parser) {
-                        ready.resolve();
-                    }
+                "//platform.twitter.com/widgets.js"
+            ).done(langPartial(function(ready) {
+                // store the parser and trigger the ready deferred
+                parser = objectGet(window, "twttr.widgets.load");
+                if (parser) {
+                    ready.resolve();
                 }
-            }, ready, config));
+            }, ready));
             
             // keep the promise
             loadPromise = ready.promise();
@@ -454,11 +443,12 @@ var social,
         return loadPromise;
     };
     
-    parsers.facebook = function(node) {
+    parsers.twitter = function(node) {
         
         if (parser) {
             
-            // parse each node in this query
+            // Twitter finally allows us to pass DOM nodes to
+            // twttr.widgets.load(...)
             arrayEach(this, parser);
         }
     };

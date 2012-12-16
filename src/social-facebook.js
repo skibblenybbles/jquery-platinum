@@ -13,11 +13,6 @@
         
         if (loadPromise === null) {
             
-            // tell Facebook that we'll parse tags manually
-            config = $extend(config || { }, {
-                xfbml: false
-            });
-            
             // we'll resolve this deferred when Facebook is ready to use
             ready = $Deferred();
             
@@ -26,10 +21,16 @@
                 (secureProtocol ? "https:" : "http:") +
                 "//connect.facebook.net/en_US/all.js"
             ).done(langPartial(function(ready, config) {
-                // intiialize Facebook with the configuration, store the 
-                // parser and trigger the ready deferred
                 var init = objectGet(window, "FB.init");
-                if (init) {                    
+                if (init) {
+                    
+                    // tell Facebook that we'll parse tags manually
+                    config = $extend(config || { }, {
+                        xfbml: false
+                    });
+                    
+                    // intiialize Facebook with the configuration, store the 
+                    // parser and trigger the ready deferred
                     init(config);
                     parser = objectGet(window, "FB.XFBML.parse");
                     if (parser) {
