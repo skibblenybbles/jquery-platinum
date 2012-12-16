@@ -28,23 +28,26 @@ $pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
+// define names for the wrapping closure
+var array,
+    arrayEach;
+
 (function() {
     
-    var 
-        // convert the given array-like object to an Array
-        // using optional slicing, stepping and negative indexing
-        array = function(iterable, start, end, step) {
-            var values = [];
-            array.each(iterable, function(value) {
-                values.push(value);
-            }, start, end, step);
-            return values;
-        };
+    // convert the given array-like object to an Array
+    // using optional slicing, stepping and negative indexing
+    array = function(iterable, start, end, step) {
+        var values = [];
+        arrayEach(iterable, function(value) {
+            values.push(value);
+        }, start, end, step);
+        return values;
+    };
     
     // run a function for each item in an array-like object
     // if the function returns false (strictly), the loop
     // will terminate
-    array.each = function(iterable, fn, start, end, step) {
+    arrayEach = array.each = function(iterable, fn, start, end, step) {
         var i,
             value,
             length = iterable.length,
@@ -99,20 +102,20 @@ $pt.noConflict = noConflict;
     
 })();
 
-// define names for the wrapping closure
-var array = $pt.array,
-    arrayEach = array.each;
-
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
+// define names for the wrapping closure
+var lang,
+    langHitch,
+    langPartial,
+    langDelegate,
+    langReady;
+
 (function() {
     
-    var 
-        // the lang plugin
-        lang = { },
-        
+    var         
         // the document ready promise
         readyPromise = new $.Deferred();
     
@@ -121,9 +124,12 @@ var array = $pt.array,
         readyPromise.resolve();
     });
     
+    // the lang plugin
+    lang = { };
+    
     // create a function with its "this" bound to the "that" argument
     // and curry any additional arguments
-    lang.hitch = function(that, fn) {
+    langHitch = lang.hitch = function(that, fn) {
         return (function(that, fn, args) {
             return function() {
                 return fn.apply(that, args.concat(array(arguments)));
@@ -132,7 +138,7 @@ var array = $pt.array,
     };
 
     // create an unbound function with curried arguments
-    lang.partial = function(fn) {
+    langPartial = lang.partial = function(fn) {
         return (function(fn, args) {
             return function() {
                 return fn.apply(null, args.concat(array(arguments)));
@@ -143,7 +149,7 @@ var array = $pt.array,
     // for the given target object, delegate all methods that 
     // appear in the source object but not in the target
     // excluding "constructor"
-    lang.delegate = function(target, source) {
+    langDelegate = lang.delegate = function(target, source) {
         var name;
         for (name in source) {
             if (typeof source[name] === "function" &&
@@ -156,7 +162,7 @@ var array = $pt.array,
     };
     
     // return a promise that gets fulfilled when the document is ready
-    lang.ready = function() {
+    langReady = lang.ready = function() {
         return readyPromise;
     };
     
@@ -165,19 +171,13 @@ var array = $pt.array,
     
 })();
 
-// define names for the wrapping closure
-var lang = $pt.lang,
-    langHitch = lang.hitch,
-    langPartial = lang.partial,
-    langDelegate = lang.delegate,
-    langReady = lang.ready;
-
 ////////////////////////////////////////
 // source: jquery.platinum-social-base.js
 // requires: array-base.js, lang.js
 
 // define names for the wrapping closure
-var socialParsers,
+var social,
+    socialParsers,
     socialLoaders;
 
 (function() {
@@ -185,9 +185,6 @@ var socialParsers,
     var
         // the load promise for each requested network
         loadPromises = { },
-        
-        // the social plugin
-        social = { },
         
         // parser methods will be stored here for each social button network
         // each parser method accepts a single DOM node to parse
@@ -197,6 +194,14 @@ var socialParsers,
         // each loader accepts a config object with options relevant for
         // its network, e.g. Facebook needs an "appId" in its options
         loaders = { };
+    
+    // export the social plugin for the wrapping closure
+    social = { };
+    
+    // export the parsers and loaders objects for the wrapping closure
+    // so they can be populated by each social-<network>.js script
+    socialLoaders = loaders;
+    socialParsers = parsers;
     
     // load and configure a social button script
     social.load = function(network, config) {
@@ -264,18 +269,10 @@ var socialParsers,
         return this;
     };
     
-    // export the parsers and loaders objects to the wrapping closure
-    // so they can be populated by each social-<network>.js script
-    socialLoaders = loaders;
-    socialParsers = parsers;
-    
     // export the social plugin
     $pt.social = social;
     
 })();
-
-// define names for the wrapping closure
-var social = $pt.social;
 
 ////////////////////////////////////////
 // source: jquery.platinum-social.js

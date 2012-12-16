@@ -1,7 +1,8 @@
 // requires: array-base.js, lang.js
 
 // define names for the wrapping closure
-var socialParsers,
+var social,
+    socialParsers,
     socialLoaders;
 
 (function() {
@@ -9,9 +10,6 @@ var socialParsers,
     var
         // the load promise for each requested network
         loadPromises = { },
-        
-        // the social plugin
-        social = { },
         
         // parser methods will be stored here for each social button network
         // each parser method accepts a single DOM node to parse
@@ -21,6 +19,14 @@ var socialParsers,
         // each loader accepts a config object with options relevant for
         // its network, e.g. Facebook needs an "appId" in its options
         loaders = { };
+    
+    // export the social plugin for the wrapping closure
+    social = { };
+    
+    // export the parsers and loaders objects for the wrapping closure
+    // so they can be populated by each social-<network>.js script
+    socialLoaders = loaders;
+    socialParsers = parsers;
     
     // load and configure a social button script
     social.load = function(network, config) {
@@ -88,15 +94,7 @@ var socialParsers,
         return this;
     };
     
-    // export the parsers and loaders objects to the wrapping closure
-    // so they can be populated by each social-<network>.js script
-    socialLoaders = loaders;
-    socialParsers = parsers;
-    
     // export the social plugin
     $pt.social = social;
     
 })();
-
-// define names for the wrapping closure
-var social = $pt.social;

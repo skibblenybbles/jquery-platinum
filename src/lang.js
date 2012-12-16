@@ -1,11 +1,15 @@
 // requires: array-base.js
 
+// define names for the wrapping closure
+var lang,
+    langHitch,
+    langPartial,
+    langDelegate,
+    langReady;
+
 (function() {
     
-    var 
-        // the lang plugin
-        lang = { },
-        
+    var         
         // the document ready promise
         readyPromise = new $.Deferred();
     
@@ -14,9 +18,12 @@
         readyPromise.resolve();
     });
     
+    // the lang plugin
+    lang = { };
+    
     // create a function with its "this" bound to the "that" argument
     // and curry any additional arguments
-    lang.hitch = function(that, fn) {
+    langHitch = lang.hitch = function(that, fn) {
         return (function(that, fn, args) {
             return function() {
                 return fn.apply(that, args.concat(array(arguments)));
@@ -25,7 +32,7 @@
     };
 
     // create an unbound function with curried arguments
-    lang.partial = function(fn) {
+    langPartial = lang.partial = function(fn) {
         return (function(fn, args) {
             return function() {
                 return fn.apply(null, args.concat(array(arguments)));
@@ -36,7 +43,7 @@
     // for the given target object, delegate all methods that 
     // appear in the source object but not in the target
     // excluding "constructor"
-    lang.delegate = function(target, source) {
+    langDelegate = lang.delegate = function(target, source) {
         var name;
         for (name in source) {
             if (typeof source[name] === "function" &&
@@ -49,7 +56,7 @@
     };
     
     // return a promise that gets fulfilled when the document is ready
-    lang.ready = function() {
+    langReady = lang.ready = function() {
         return readyPromise;
     };
     
@@ -57,10 +64,3 @@
     $pt.lang = lang;
     
 })();
-
-// define names for the wrapping closure
-var lang = $pt.lang,
-    langHitch = lang.hitch,
-    langPartial = lang.partial,
-    langDelegate = lang.delegate,
-    langReady = lang.ready;

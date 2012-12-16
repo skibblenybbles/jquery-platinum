@@ -1,22 +1,25 @@
 // requires: 
 
+// define names for the wrapping closure
+var array,
+    arrayEach;
+
 (function() {
     
-    var 
-        // convert the given array-like object to an Array
-        // using optional slicing, stepping and negative indexing
-        array = function(iterable, start, end, step) {
-            var values = [];
-            array.each(iterable, function(value) {
-                values.push(value);
-            }, start, end, step);
-            return values;
-        };
+    // convert the given array-like object to an Array
+    // using optional slicing, stepping and negative indexing
+    array = function(iterable, start, end, step) {
+        var values = [];
+        arrayEach(iterable, function(value) {
+            values.push(value);
+        }, start, end, step);
+        return values;
+    };
     
     // run a function for each item in an array-like object
     // if the function returns false (strictly), the loop
     // will terminate
-    array.each = function(iterable, fn, start, end, step) {
+    arrayEach = array.each = function(iterable, fn, start, end, step) {
         var i,
             value,
             length = iterable.length,
@@ -70,7 +73,3 @@
     $pt.array = array;
     
 })();
-
-// define names for the wrapping closure
-var array = $pt.array,
-    arrayEach = array.each;

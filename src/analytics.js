@@ -1,5 +1,8 @@
 // requires: array-base.js, lang.js, scripts.js
 
+// define names for the wrapping closure
+var analytics;
+
 (function() {
     
     var 
@@ -27,52 +30,6 @@
             }
             
             this.trackers = trackers;
-        },
-        
-        // the analytics plugin
-        analytics = function() {
-            // determine the requested trackers
-            // and avoid duplicates using the "set"
-            var trackers = [],
-                trackersSet = { };
-            
-            // determine the requested trackers based on the passed arguments
-            if (arguments.length === 0) {
-                
-                // for no arguments, just use this
-                return this;
-                
-            } else if (arguments.length === 1 && arguments[0] === "*") {
-                
-                // use all trackers
-                trackers = allTrackers;
-            
-            } else {
-                
-                // each passed argument may be a string or Array
-                arrayEach(arguments, function(arg) {
-                    
-                    if (typeof arg === "string") {
-                        
-                        if (!trackersSet.hasOwnProperty(arg)) {
-                            trackers.push(arg);
-                            trackersSet[arg] = true;
-                        }
-                        
-                    } else if ($.isArray(arg)) {
-                        
-                        arrayEach(arg, function(tracker) {
-                            
-                            if (!trackersSet.hasOwnProperty(tracker)) {
-                                trackers.push(tracker);
-                                trackersSet[tracker] = true;
-                            }
-                        });
-                    }
-                });
-            }
-            
-            return new Analytics(trackers);
         },
         
         // creates a method wrapper for the Analytics prototype 
@@ -216,6 +173,52 @@
         // the promise to load the Google Analytics script
         loadPromise = null;
     
+    // create the analytics plugin
+    analytics = function() {
+        // determine the requested trackers
+        // and avoid duplicates using the "set"
+        var trackers = [],
+            trackersSet = { };
+        
+        // determine the requested trackers based on the passed arguments
+        if (arguments.length === 0) {
+            
+            // for no arguments, just use this
+            return this;
+            
+        } else if (arguments.length === 1 && arguments[0] === "*") {
+            
+            // use all trackers
+            trackers = allTrackers;
+        
+        } else {
+            
+            // each passed argument may be a string or Array
+            arrayEach(arguments, function(arg) {
+                
+                if (typeof arg === "string") {
+                    
+                    if (!trackersSet.hasOwnProperty(arg)) {
+                        trackers.push(arg);
+                        trackersSet[arg] = true;
+                    }
+                    
+                } else if ($.isArray(arg)) {
+                    
+                    arrayEach(arg, function(tracker) {
+                        
+                        if (!trackersSet.hasOwnProperty(tracker)) {
+                            trackers.push(tracker);
+                            trackersSet[tracker] = true;
+                        }
+                    });
+                }
+            });
+        }
+        
+        return new Analytics(trackers);
+    }
+    
     // loads Google Analytics ga.js
     analytics.load = function() {
         
@@ -273,6 +276,3 @@
     $pt.analytics = analytics;
     
 })();
-
-// define names for the wrapping closure
-var analytics = $pt.analytics;

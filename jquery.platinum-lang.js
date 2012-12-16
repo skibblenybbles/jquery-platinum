@@ -28,23 +28,26 @@ $pt.noConflict = noConflict;
 // source: jquery.platinum-array-base.js
 // requires: 
 
+// define names for the wrapping closure
+var array,
+    arrayEach;
+
 (function() {
     
-    var 
-        // convert the given array-like object to an Array
-        // using optional slicing, stepping and negative indexing
-        array = function(iterable, start, end, step) {
-            var values = [];
-            array.each(iterable, function(value) {
-                values.push(value);
-            }, start, end, step);
-            return values;
-        };
+    // convert the given array-like object to an Array
+    // using optional slicing, stepping and negative indexing
+    array = function(iterable, start, end, step) {
+        var values = [];
+        arrayEach(iterable, function(value) {
+            values.push(value);
+        }, start, end, step);
+        return values;
+    };
     
     // run a function for each item in an array-like object
     // if the function returns false (strictly), the loop
     // will terminate
-    array.each = function(iterable, fn, start, end, step) {
+    arrayEach = array.each = function(iterable, fn, start, end, step) {
         var i,
             value,
             length = iterable.length,
@@ -99,20 +102,20 @@ $pt.noConflict = noConflict;
     
 })();
 
-// define names for the wrapping closure
-var array = $pt.array,
-    arrayEach = array.each;
-
 ////////////////////////////////////////
 // source: jquery.platinum-lang.js
 // requires: array-base.js
 
+// define names for the wrapping closure
+var lang,
+    langHitch,
+    langPartial,
+    langDelegate,
+    langReady;
+
 (function() {
     
-    var 
-        // the lang plugin
-        lang = { },
-        
+    var         
         // the document ready promise
         readyPromise = new $.Deferred();
     
@@ -121,9 +124,12 @@ var array = $pt.array,
         readyPromise.resolve();
     });
     
+    // the lang plugin
+    lang = { };
+    
     // create a function with its "this" bound to the "that" argument
     // and curry any additional arguments
-    lang.hitch = function(that, fn) {
+    langHitch = lang.hitch = function(that, fn) {
         return (function(that, fn, args) {
             return function() {
                 return fn.apply(that, args.concat(array(arguments)));
@@ -132,7 +138,7 @@ var array = $pt.array,
     };
 
     // create an unbound function with curried arguments
-    lang.partial = function(fn) {
+    langPartial = lang.partial = function(fn) {
         return (function(fn, args) {
             return function() {
                 return fn.apply(null, args.concat(array(arguments)));
@@ -143,7 +149,7 @@ var array = $pt.array,
     // for the given target object, delegate all methods that 
     // appear in the source object but not in the target
     // excluding "constructor"
-    lang.delegate = function(target, source) {
+    langDelegate = lang.delegate = function(target, source) {
         var name;
         for (name in source) {
             if (typeof source[name] === "function" &&
@@ -156,7 +162,7 @@ var array = $pt.array,
     };
     
     // return a promise that gets fulfilled when the document is ready
-    lang.ready = function() {
+    langReady = lang.ready = function() {
         return readyPromise;
     };
     
@@ -164,13 +170,6 @@ var array = $pt.array,
     $pt.lang = lang;
     
 })();
-
-// define names for the wrapping closure
-var lang = $pt.lang,
-    langHitch = lang.hitch,
-    langPartial = lang.partial,
-    langDelegate = lang.delegate,
-    langReady = lang.ready;
 
 
 ////////////////////////////////////////
