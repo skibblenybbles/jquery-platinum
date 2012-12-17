@@ -1,58 +1,31 @@
-// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
-    var loaders = socialLoaders,
-        parsers = socialParsers,
-        loadPromise = null,
-        parser = null;
-    
-    loaders.facebook = function(config) {
+    socialPlugins.facebook = {
         
-        var ready;
+        url: urlScheme + "connect.facebook.net/en_US/all.js",
         
-        if (loadPromise === null) {
+        loaded: function(key) {
             
-            // we'll resolve this deferred when Facebook is ready to use
-            ready = $Deferred();
+            var init = objectGet(window, "FB.init"),
+                parser;
             
-            // load the script
-            scriptsLoad(
-                urlScheme + "connect.facebook.net/en_US/all.js"
-            ).done(langPartial(function(ready, config) {
+            if (init) {
                 
-                var init = objectGet(window, "FB.init");
-                if (init) {
-                    
-                    // tell Facebook that we'll parse tags manually
-                    config = $extend(config || { }, {
-                        xfbml: false
-                    });
-                    
-                    // intiialize Facebook with the configuration, store the 
-                    // parser and trigger the ready deferred
-                    init(config);
-                    parser = objectGet(window, "FB.XFBML.parse");
-                    if (parser) {
-                        ready.resolve();
-                    }
+                // intiialize Facebook
+                init({
+                    appId: key,
+                    xfbml: false
+                });
+                
+                // register the parser
+                parser = objectGet(window, "FB.XFBML.parse");
+                if (parser) {
+                    socialRegister("facebook", parser);
                 }
-            }, ready, config));
-            
-            // keep the promise
-            loadPromise = ready.promise();
+            }
         }
-        
-        return loadPromise;
     };
     
-    parsers.facebook = function(node) {
-        
-        if (parser) {
-            
-            // parse each node in this query
-            arrayEach(this, parser);
-        }
-    };
-
 })();

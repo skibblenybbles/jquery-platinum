@@ -214,60 +214,97 @@ var lang,
 })();
 
 ////////////////////////////////////////
+// source: jquery.platinum-scripts.js
+// requires: base.js
+
+// define names for the wrapping closure
+var scripts,
+    scriptsLoad;
+
+(function() {
+    
+    // the scripts plugin
+    scripts = { };
+    
+    // return a promise to load a script
+    scriptsLoad = scripts.load = function(url, options) {
+        // allow override of any option except for dataType, cache and url
+        options = $extend(options || { }, {
+            dataType: "script",
+            cache: true,
+            url: url
+        });
+        return $ajax(options);
+    };
+    
+    // export the scripts plugin
+    $pt.scripts = scripts;
+    
+})();
+
+////////////////////////////////////////
 // source: jquery.platinum-social-base.js
-// requires: base.js, lang.js
+// requires: base.js, array-base.js, lang.js, scripts.js
 
 // define names for the wrapping closure
 var social,
-    socialParsers,
-    socialLoaders;
+    socialPlugins,
+    socialRegister;
 
 (function() {
     
     var
         // the load promise for each requested network
-        loadPromises = { },
+        promises = { },
         
-        // parser methods will be stored here for each social button network
-        // each parser method will be called with its "this" set to a
-        // jQuery DOM query
-        parsers = { },
-        
-        // loader methods will be stored here for each social button network
-        // each loader accepts a config object with options relevant for
-        // its network, e.g. Facebook needs an "appId" in its options
-        // each loader method should return a promise to load its social
-        // button network
-        loaders = { };
+        // the parser method for each social button network
+        // each parser accepts a single DOM node argument
+        parsers = { };
     
     // export the social plugin for the wrapping closure
     social = { };
     
-    // export the parsers and loaders objects for the wrapping closure
-    // so they can be populated by each social-<network>.js script
-    socialLoaders = loaders;
-    socialParsers = parsers;
+    // export the social plugins object for the wrapping closure that each
+    // social-<network>.js  script will populate with an url property and
+    // a loaded() callback functions
+    socialPlugins = { };
     
-    // load and configure a social button script
-    social.load = function(network, config) {
+    // export the register function for the wrapping closure that each
+    // social-<network>.js script will call from its loaded() callback
+    // once the network's parser is ready
+    socialRegister = function(network, parser) {
+        // store the network's parser and resolve its promise
+        if (promises[network]) {
+            parsers[network] = parser;
+            promises[network].resolve();
+        }
+    };
+    
+    // load and initialize a social button script
+    social.load = function(network, key) {
         
-        var loader = loaders[network];
+        var plugin = socialPlugins[network];
         
         // does the requested network exist?
-        if (!loader) {
+        if (!plugin) {
             return null;
         }
         
         // do we need to load and configure the network?
-        if (!loadPromises.hasOwnProperty(network)) {
-            loadPromises[network] = loader(config);
+        if (!promises[network]) {
+            
+            promises[network] = $Deferred.promise();
+            
+            // load the script and call its loaded method upon completion
+            scriptsLoad(plugin.url).done(lang.hitch(plugin, plugin.loaded, key));
         }
-        return loadPromises[network];
+        
+        return promises[network];
     };
     
     // get the promise to load a social button script
     social.promise = function(network) {
-        var promise = loadPromises[network];
+        var promise = promises[network];
         return promise ? promise : null;
     };
     
@@ -286,7 +323,7 @@ var social,
     $.fn.social = function(network, done, delay) {
         
         var parse = parsers[network],
-            loadPromise = loadPromises[network],
+            loadPromise = promises[network],
             readyPromise = langReady();
         
         if (parse && loadPromise) {
@@ -297,8 +334,8 @@ var social,
             
             $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {
                 
-                // parse the buttons
-                parse();
+                // parse each node in this query
+                arrayEach(this, parse);
                 
                 // optionally after a delay, run the callback 
                 if (done !== null) {
@@ -379,274 +416,125 @@ var object,
 })();
 
 ////////////////////////////////////////
-// source: jquery.platinum-scripts.js
-// requires: base.js
-
-// define names for the wrapping closure
-var scripts,
-    scriptsLoad;
-
-(function() {
-    
-    // the scripts plugin
-    scripts = { };
-    
-    // return a promise to load a script
-    scriptsLoad = scripts.load = function(url, options) {
-        // allow override of any option except for dataType, cache and url
-        options = $extend(options || { }, {
-            dataType: "script",
-            cache: true,
-            url: url
-        });
-        return $ajax(options);
-    };
-    
-    // export the scripts plugin
-    $pt.scripts = scripts;
-    
-})();
-
-////////////////////////////////////////
 // source: jquery.platinum-social-google.js
-// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
-    var loaders = socialLoaders,
-        parsers = socialParsers,
-        loadPromise = null,
-        parser = null;
-    
-    loaders.google = function(config) {
+    socialPlugins.google = {
         
-        var ready;
+        url: "https://apis.google.com/js/plusone.js",
         
-        if (loadPromise === null) {
+        loaded: function() {
             
-            // tell Google+ that we'll parse button tags manually
-            window.___gcfg = {
-                parsetags: "explicit"
-            };
-            
-            // we'll resolve this deferred when Google+ is ready to use
-            ready = $Deferred();
-            
-            // load the script
-            scriptsLoad(
-                "https://apis.google.com/js/plusone.js"
-            ).done(langPartial(function(ready) {
-                // store the parser and trigger the ready deferred
-                parser = objectGet(window, "gapi.plusone.go");
-                if (parser) {
-                    ready.resolve();
-                }
-            }, ready));
-            
-            // keep the promise
-            loadPromise = ready.promise();
-        }
-        return loadPromise;
-    };
-    
-    parsers.google = function() {
-        
-        if (parser) {
-            
-            // parse each node in this query
-            arrayEach(this, parser);
+            // register the parser
+            var parser = objectGet(window, "gapi.plusone.go");
+            if (parser) {
+                socialRegister("google", parser);
+            }
         }
     };
-
+    
 })();
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-facebook.js
-// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
-    var loaders = socialLoaders,
-        parsers = socialParsers,
-        loadPromise = null,
-        parser = null;
-    
-    loaders.facebook = function(config) {
+    socialPlugins.facebook = {
         
-        var ready;
+        url: urlScheme + "connect.facebook.net/en_US/all.js",
         
-        if (loadPromise === null) {
+        loaded: function(key) {
             
-            // we'll resolve this deferred when Facebook is ready to use
-            ready = $Deferred();
+            var init = objectGet(window, "FB.init"),
+                parser;
             
-            // load the script
-            scriptsLoad(
-                urlScheme + "connect.facebook.net/en_US/all.js"
-            ).done(langPartial(function(ready, config) {
+            if (init) {
                 
-                var init = objectGet(window, "FB.init");
-                if (init) {
-                    
-                    // tell Facebook that we'll parse tags manually
-                    config = $extend(config || { }, {
-                        xfbml: false
-                    });
-                    
-                    // intiialize Facebook with the configuration, store the 
-                    // parser and trigger the ready deferred
-                    init(config);
-                    parser = objectGet(window, "FB.XFBML.parse");
-                    if (parser) {
-                        ready.resolve();
-                    }
+                // intiialize Facebook
+                init({
+                    appId: key,
+                    xfbml: false
+                });
+                
+                // register the parser
+                parser = objectGet(window, "FB.XFBML.parse");
+                if (parser) {
+                    socialRegister("facebook", parser);
                 }
-            }, ready, config));
-            
-            // keep the promise
-            loadPromise = ready.promise();
+            }
         }
-        
-        return loadPromise;
     };
     
-    parsers.facebook = function(node) {
-        
-        if (parser) {
-            
-            // parse each node in this query
-            arrayEach(this, parser);
-        }
-    };
-
 })();
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-twitter.js
-// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
-    var loaders = socialLoaders,
-        parsers = socialParsers,
-        loadPromise = null,
-        parser = null;
-    
-    loaders.twitter = function(config) {
+    socialPlugins.twitter = {
         
-        var ready;
+        url: urlScheme + "platform.twitter.com/widgets.js",
         
-        if (loadPromise === null) {
+        loaded: function() {
             
-            // we'll resolve this deferred when Twitter is ready to use
-            ready = $Deferred();
-            
-            // load the script
-            scriptsLoad(
-                urlScheme + "platform.twitter.com/widgets.js"
-            ).done(langPartial(function(ready) {
-                
-                // store the parser and trigger the ready deferred
-                parser = objectGet(window, "twttr.widgets.load");
-                if (parser) {
-                    ready.resolve();
-                }
-            }, ready));
-            
-            // keep the promise
-            loadPromise = ready.promise();
-        }
-        
-        return loadPromise;
-    };
-    
-    parsers.twitter = function(node) {
-        
-        if (parser) {
-            
-            // Twitter finally allows us to pass DOM nodes to
-            // twttr.widgets.load(...)
-            arrayEach(this, parser);
+            // register the parser
+            var parser = objectGet(window, "twttr.widgets.load");
+            if (parser) {
+                socialRegister("twitter", parser);
+            }
         }
     };
-
+    
 })();
 
 ////////////////////////////////////////
 // source: jquery.platinum-social-linkedin.js
-// requires: base.js, array-base.js, object-base.js, lang.js, scripts.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
-    var loaders = socialLoaders,
-        parsers = socialParsers,
-        loadPromise = null,
-        parser = null;
-    
-    loaders.linkedin = function(config) {
+    socialPlugins.linkedin = {
         
-        var ready;
+        url: urlScheme + "platform.linkedin.com/in.js?async=true",
         
-        if (loadPromise === null) {
+        loaded: function(key) {
             
-            // tell Linked in to prompt users for authorization
-            config = $extend(config || { }, {
-                authorize: true
-            });
-            
-            // we'll resolve this deferred when LinkedIn is ready to use
-            ready = $Deferred();
-            
-            // load the script
-            scriptsLoad(
-                urlScheme + "platform.linkedin.com/in.js?async=true"
-            ).done(langPartial(function(ready, config) {
-                
-                var init = objectGet(window, "IN.init"),
-                    readyCallback = "___in";
-                
-                if (init) {
-                    
-                    // tell LinkedIn to prompt users for authorization
-                    // and set the name for the global LinkedIn ready callback
-                    config = $extend(config || { }, {
-                        authorize: true,
-                        onLoad: readyCallback
-                    });
-                    
-                    // set up the global LinkedIn ready callback
-                    window[readyCallback] = langPartial(function(ready) {
-                        // store the parser, trigger the ready deferred
-                        // and clean up the nasty global
-                        parser = objectGet(window, "IN.parse");
-                        if (parser) {
-                            ready.resolve();
-                        }
-                        delete window[readyCallback];
-                    }, ready);
-                    
-                    // intiialize LinkedIn with the configuration
-                    init(config);
-                }
-                
-            }, ready, config));
-            
-            // keep the promise
-            loadPromise = ready.promise();
-        }
-        
-        return loadPromise;
-    };
-    
-    parsers.linkedin = function(node) {
-        
-        if (parser) {
-            
-            // parse each node in this query
-            arrayEach(this, parser);
-        }
-    };
+            var init = objectGet(window, "IN.init"),
+                ready = "___in";
 
+            if (init) {
+                
+                // set up the global LinkedIn ready callback
+                window[ready] = function() {
+
+                    // get the LinkedIn parser
+                    var parser = objectGet(window, "IN.parse");
+
+                    // clean up the nasty global
+                    delete window[ready];
+
+                    // register the parser
+                    if (parser) {
+                        socialRegister("linkedin", parser);
+                    }
+                };
+
+                // intiialize LinkedIn
+                init({
+                    api_key: key,
+                    authorize: true,
+                    onLoad: ready
+                });
+            }
+        }
+    };
+    
 })();
 
 ////////////////////////////////////////
