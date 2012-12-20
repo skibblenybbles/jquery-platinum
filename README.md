@@ -164,7 +164,7 @@ This script provides utilities for loading scripts asynchronously.
 ### `$pt.scripts.load(url, options)`
 
 Loads a JavaScript file with the given `url` and executes it. This is a lightweight wrapper around
-`$.ajax()` with hard-coded values `dataType === true` and `cache === true`. According to jQuery's documentation,
+`$.ajax()` with hard-coded values `dataType === "script"` and `cache === true`. According to jQuery's documentation,
 the provided `$.getScript()` sets `cache` to `false`, so this is probably a better choice for loading
 scripts asynchronously in most cases. It returns the resulting promise from calling `$.ajax()`, so you
 can register a load callback by calling the return value's `done()` method.

@@ -37,7 +37,8 @@ var social,
     // load and initialize a social button script
     social.load = function(network, key) {
         
-        var plugin = socialPlugins[network];
+        var plugin = socialPlugins[network],
+            loaded;
         
         // does the requested network exist?
         if (!plugin) {
@@ -49,8 +50,13 @@ var social,
             
             promises[network] = $Deferred.promise();
             
-            // load the script and call its loaded method upon completion
-            scriptsLoad(plugin.url).done(lang.hitch(plugin, plugin.loaded, key));
+            // if necessary, load the script, then call its loaded method
+            loaded = lang.hitch(plugin, plugin.loaded, key);
+            if (plugin.url) {
+                scriptsLoad(plugin.url).done(loaded);
+            } else {
+                loaded();
+            }
         }
         
         return promises[network];

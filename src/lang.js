@@ -10,12 +10,13 @@ var lang,
 (function() {
     
     var         
-        // the document ready promise
-        readyPromise = $Deferred();
+        // the document ready Deferred and promise
+        readyDeferred = $Deferred(),
+        readyPromise = readyDeferred.promise();
     
     // set up the document ready promise
     $(document).ready(function() {
-        readyPromise.resolve();
+        readyDeferred.resolve();
     });
     
     // the lang plugin
