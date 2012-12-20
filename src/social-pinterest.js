@@ -41,16 +41,18 @@
             return value && "1";
         },
         
-        // Pinterest button attributes mapped to an array containing
-        // the data-* attribute name from the HTML5 tag and a cleaning 
-        // function to transform the attribute
+        // Pinterest iframe query string keys mapped to an array containing:
+        // * the data-* attribute name from the HTML5 tag (or null if
+        //  the attribute is the same as the query string)
+        // * a cleaning function to transform the attribute (or undefined
+        //  if it's not required)
         attrs = {
-            "url": ["url", cleanUrl],
+            "url": [null, cleanUrl],
             "media": ["image", cleanUrl],
-            "layout": ["layout", cleanLayout],
+            "layout": [null, cleanLayout],
             "count": ["always-show-count", cleanCount],
-            "title": ["title"],
-            "description": ["description"]
+            "title": null,
+            "description": null
         },
         
         // a jQuery port of the HTML5 PinterestPlus button parser script from
@@ -69,11 +71,17 @@
             
             // process each of the Pinterest button attributes
             objectEachOwned(attrs, function(attr, config) {
-                var data = "data-" + config[0],
-                    clean = config[1],
-                    value = node.attr(data);
+                var data,
+                    clean,
+                    value;
+                config = config || [];
+                data = "data-" + (config[0] || attr);
+                clean = config[1];
+                
+                value = node.attr(data);
                 value = clean ? clean(value) : value;
                 query[attr] = value;
+                
                 valid = valid && value !== false;
                 return valid;
             });
