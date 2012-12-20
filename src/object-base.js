@@ -45,11 +45,17 @@ var object,
     // and value for each property in an object, with a
     // choice to optionally filter out the properties for which
     // obj.hasOwnProperty() is false
+    // if the function returns false (strictly), the loop
+    // will terminate
     objectEach = object.each = function(obj, owns, fn) {
-        var key;
+        var key,
+            value;
         for (key in obj) {
             if (!owns || obj.hasOwnProperty(key)) {
-                fn(key, obj[key]);
+                value = fn(key, obj[key]);
+                if (value === false) {
+                    return;
+                }
             }
         }
     };

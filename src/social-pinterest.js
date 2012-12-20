@@ -1,4 +1,4 @@
-// requires: base.js, social-base.js
+// requires: base.js, object-base.js, social-base.js
 
 (function() {
     
@@ -6,81 +6,81 @@
         // the Pinterest button iframe URL
         url = urlScheme + (secureProtocol ? "assets" : "pinit-cdn") + ".pinterest.com/pinit.html",
         
-        // url testing regular expression
-        urlRx = /^http(s?):\/\/.+/i,
-        
-        // layout testing regular expression
-        layoutRx = /^none|vertical|horizontal$/,
-        
         // layout style configurations
-        layout = {
-            none: {
-                width: 43,
-                height: 20
+        layouts = {
+            "none": {
+                "width": "43px",
+                "height": "20px"
             },
-            vertical: {
-                width: 43,
-                height: 58
+            "vertical": {
+                "width": "43px",
+                "height": "58px"
             },
-            horizontal: {
-                width: 90,
-                height: 20
+            "horizontal": {
+                "width": "90px",
+                "height": "20px"
             }
+        },
+        
+        // url testing regular expression
+        rxUrl = /^http(s?):\/\/.+/i,
+        
+        // URL cleaner
+        cleanUrl = function(value) {
+            return rxUrl.test(value) && value;
+        },
+        
+        // layout cleaner
+        cleanLayout = function(value) {
+            value = value || "horizontal";
+            return layouts.hasOwnProperty(value) && value;
+        },
+        
+        // count cleaner
+        cleanCount = function(value) {
+            return value && "1";
+        },
+        
+        // Pinterest button attributes mapped to an array containing
+        // the data-* attribute name from the HTML5 tag and a cleaning 
+        // function to transform the attribute
+        attrs = {
+            "url": ["url", cleanUrl],
+            "media": ["image", cleanUrl],
+            "layout": ["layout", cleanLayout],
+            "count": ["always-show-count", cleanCount],
+            "title": ["title"],
+            "description": ["description"]
         },
         
         // a jQuery port of the HTML5 PinterestPlus button parser script from
         // https://github.com/skibblenybbles/PinterestPlus
-        parser = function(node) {
-        
-            var 
-                // conver the node to a jQuery object
-                node = $(node),
+        parse = function() {
             
+            var
+                // convert the node to a jQuery object
+                node = $(this),
+                
                 // is the node valid?
                 valid = true,
                 
                 // query params for the iframe
-                query = { },
-                
-                // the layout we'll use
-                layout,
-                
-                // the current attribute we're processing
-                attr;
+                query = { };
             
-            // required attributes
-            attr = node.attr("data-url");
-            valid = valid && attr && urlRx.test(attr);
-            query["url"] = attr;
-            
-            attr = node.attr("data-image");
-            valid = valid && attr && urlRx.test(attr);
-            query["media"] = attr;
-            
-            // optional attributes
-            attr = node.attr("data-layout") || "horizontal";
-            valid = valid && attr && layoutRx.test(attr);
-            query["layout"] = attr;
-            
-            attr = node.attr("data-title");
-            if (attr) {
-                query["title"] = attr;
-            }
-            
-            attr = node.attr("data-description");
-            if (attr) {
-                query["description"] = attr;
-            }
-            
-            attr = node.attr("data-always-show-count");
-            if (attr) {
-                query["count"] = "1";
-            }
+            // process each of the Pinterest button attributes
+            objectEach(attrs, function(attr, config) {
+                var data = "data-" + config[0],
+                    clean = config[1],
+                    value = node.attr(data);
+                value = clean ? clean(value) : value;
+                query[attr] = value;
+                valid = valid && value !== false;
+                return valid;
+            }, true);
             
             if (valid) {
                 
                 // valid, so create the iframe and replace the node in the DOM
-                layout = query["layout"];
                 node.replaceWith(
                     $("<iframe />")
                         .attr({
@@ -90,8 +90,7 @@
                             "frameborder": "0"
                         })
                         .css("border", "none")
-                        .css("width", layout["width"] + "px")
-                        .css("height", layout["height"] + "px")
+                        .css(layouts[query["layout"]])
                 );
                 
             } else {
@@ -99,6 +98,12 @@
                 // invalid, so remove the node from the DOM
                 node.remove();
             }
+        },
+        
+        // the node parser that invokes parse() for each Pinterest
+        // button tag found in the given DOM node
+        parser = function(node) {
+            $(node).find(".pin-it-button").each(parse);
         };
     
     socialPlugins.pinterest = {
