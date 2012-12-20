@@ -259,23 +259,33 @@ var object,
             : undefined;
     };
     
-    // call a function that accepts two arguments for key
-    // and value for each property in an object, with a
-    // choice to optionally filter out the properties for which
-    // obj.hasOwnProperty() is false
+    // call a function that accepts two arguments, key
+    // and value, for each property in an object
     // if the function returns false (strictly), the loop
     // will terminate
-    objectEach = object.each = function(obj, owns, fn) {
+    objectEach = object.each = function(obj, fn) {
         var key,
             value;
         for (key in obj) {
-            if (!owns || obj.hasOwnProperty(key)) {
-                value = fn(key, obj[key]);
-                if (value === false) {
-                    return;
-                }
+            value = fn(key, obj[key]);
+            if (value === false) {
+                return;
             }
         }
+    },
+    
+    // call a function that accepts two arguments, key
+    // and value, for each proprety owned by an object,
+    // that is, each property for which obj.hasOwnProperty((key)
+    // is true
+    // if the function returns false (strictly), the loop
+    // will terminate
+    objectEachOwned = object.eachOwned = function(obj, fn) {
+        objectEach(obj, function(key, value) {
+            if (obj.hasOwnProperty(key)) {
+                return fn(key, value);
+            }
+        });
     };
     
     // export the object plugin

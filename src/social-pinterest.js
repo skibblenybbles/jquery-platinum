@@ -68,7 +68,7 @@
                 query = { };
             
             // process each of the Pinterest button attributes
-            objectEach(attrs, function(attr, config) {
+            objectEachOwned(attrs, function(attr, config) {
                 var data = "data-" + config[0],
                     clean = config[1],
                     value = node.attr(data);
@@ -76,7 +76,7 @@
                 query[attr] = value;
                 valid = valid && value !== false;
                 return valid;
-            }, true);
+            });
             
             if (valid) {
                 
