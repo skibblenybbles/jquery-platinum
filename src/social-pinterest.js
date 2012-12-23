@@ -46,6 +46,7 @@
         //  the attribute is the same as the query string)
         // * a cleaning function to transform the attribute (or undefined
         //  if it's not required)
+        // a missing array in the mapping is equivalent to [null]
         attrs = {
             "url": [null, cleanUrl],
             "media": ["image", cleanUrl],
@@ -80,7 +81,9 @@
                 
                 value = node.attr(data);
                 value = clean ? clean(value) : value;
-                query[attr] = value;
+                if (value) {
+                    query[attr] = value;
+                }
                 
                 valid = valid && value !== false;
                 return valid;
