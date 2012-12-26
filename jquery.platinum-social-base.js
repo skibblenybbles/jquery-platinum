@@ -329,26 +329,27 @@ var social,
     //      callback (defaults to 500)
     $.fn.social = function(network, done, delay) {
         
-        var parse = parsers[network],
-            loadPromise = promises[network],
+        var loadPromise = promises[network],
             readyPromise = langReady();
         
-        if (parse && loadPromise) {
+        // only bother if an explicit call has already been made to load
+        // the network
+        if (loadPromise) {
             
-            parse = lang.hitch(this, parse);
             done = isFunction(done) ? langHitch(this, done) : null;
             delay = Math.max(0, done || 500);
             
-            $.when(loadPromise, readyPromise).done(langHitch(this, function(parse, done, delay) {
+            $.when(loadPromise, readyPromise).done(langHitch(this, function(network, done, delay) {
                 
                 // parse each node in this query
-                arrayEach(this, parse);
+                arrayEach(this, parsers[network]);
                 
-                // optionally after a delay, run the callback 
+                // optionally after a delay, run the callback
                 if (done !== null) {
                     delay === 0 ? done() : setTimeout(done, delay);
                 }
-            }, parse, done, delay));
+                
+            }, network, done, delay));
         }
         
         return this;

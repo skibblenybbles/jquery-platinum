@@ -275,7 +275,7 @@ var object,
     },
     
     // call a function that accepts two arguments, key
-    // and value, for each proprety owned by an object,
+    // and value, for each property owned by an object,
     // that is, each property for which obj.hasOwnProperty((key)
     // is true
     // if the function returns false (strictly), the loop
